@@ -3,147 +3,195 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NVIDIA Holdings of Large Public Pension Funds: Daily Value Tracker</title>
+<title>NVIDIA holdings of large state and local pension funds | Equable Institute</title>
+<link rel="preload" href="fonts/din-next-lt-pro-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/din-next-lt-pro-heavy.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/IBMPlexSerif-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="equable.css">
 <style>
-.viz-root{
-  color-scheme:light;
-  --surface-0:#f4f3ef; --surface-1:#fcfcfb; --border:#e2e0d9; --grid:#ecebe6;
-  --text-primary:#0b0b0b; --text-secondary:#52514e; --text-muted:#7a7974;
-  --series-1:#2a78d6; --series-1-fill:rgba(42,120,214,.10); --ref:#9a9890;
-  --neg:#b4332f; --pos:#1f7a3a; --accent-bg:#e8f0fb;
-}
-@media (prefers-color-scheme:dark){
-  :root:where(:not([data-theme="light"])) .viz-root{
-    color-scheme:dark;
-    --surface-0:#111110; --surface-1:#1a1a19; --border:#33322f; --grid:#2a2a28;
-    --text-primary:#f0efec; --text-secondary:#c3c2b7; --text-muted:#8f8e86;
-    --series-1:#3987e5; --series-1-fill:rgba(57,135,229,.16); --ref:#77766f;
-    --neg:#e66767; --pos:#4cbf6a; --accent-bg:#1d2a3b;
-  }
-}
+/* Page layout + components, built only from Equable Design System tokens */
 *{box-sizing:border-box}
 html,body{margin:0}
-body{background:var(--surface-0)}
-.viz-root{font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--text-primary);background:var(--surface-0);min-height:100vh}
-.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 48px}
-h1{font-size:24px;line-height:1.25;margin:0 0 6px;font-weight:650;letter-spacing:-.01em}
-h2{font-size:16px;margin:0 0 4px;font-weight:620}
-.sub{color:var(--text-secondary);margin:0 0 4px}
-.meta{color:var(--text-muted);font-size:12.5px}
-.card{background:var(--surface-1);border:1px solid var(--border);border-radius:12px;padding:18px}
-.controls{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:20px 0 14px}
-.seg{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--surface-1)}
-.seg button{all:unset;cursor:pointer;padding:7px 12px;font-size:13px;color:var(--text-secondary)}
-.seg button[aria-pressed="true"]{background:var(--accent-bg);color:var(--text-primary);font-weight:600}
-.seg button+button{border-left:1px solid var(--border)}
-.seg button:focus-visible{outline:2px solid var(--series-1);outline-offset:-2px}
-label.chk{display:inline-flex;gap:6px;align-items:center;font-size:13px;color:var(--text-secondary);cursor:pointer}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:14px}
-.kpi .lbl{font-size:12px;color:var(--text-secondary);margin-bottom:4px}
-.kpi .val{font-size:24px;font-weight:650;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
-.kpi .det{font-size:12.5px;color:var(--text-muted);margin-top:2px;font-variant-numeric:tabular-nums}
-.neg{color:var(--neg)} .pos{color:var(--pos)}
-.charthead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+body{background:var(--surface-page);color:var(--text-body);font-family:var(--font-sans);font-size:var(--fs-paragraph-sm);line-height:var(--lh-body);-webkit-font-smoothing:antialiased}
+.container{max-width:var(--container-max);margin:0 auto;padding:var(--space-12) var(--container-pad) var(--space-16)}
+section{margin-top:var(--space-12)}
+
+/* Header */
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:var(--font-sans);font-weight:var(--weight-medium);font-size:var(--fs-eyebrow);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-link)}
+.eyebrow .bar{width:28px;height:3px;background:var(--yellow-500);flex:none}
+h1.eqb-h2{margin:var(--space-4) 0 var(--space-4);max-width:22ch}
+.lede{margin:0;max-width:60ch}
+.meta{margin-top:var(--space-4);font-weight:var(--weight-medium);font-size:var(--fs-badge-sm);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-muted)}
+
+/* Controls: notched-pill Tags */
+.controls{display:flex;flex-wrap:wrap;gap:var(--space-4) var(--space-8);align-items:center;margin-top:var(--space-10);padding-top:var(--space-6);border-top:1px solid var(--border-subtle)}
+.ctl{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap}
+.ctl-label{font-weight:var(--weight-medium);font-size:var(--fs-badge-sm);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-muted)}
+.tag{appearance:none;display:inline-flex;align-items:center;gap:7px;font-family:var(--font-sans);font-weight:var(--weight-medium);font-size:14px;letter-spacing:0.5px;text-transform:uppercase;line-height:1;padding:var(--space-2) var(--space-4);border-radius:var(--notch-up);border:1.5px solid var(--border-subtle);background:transparent;color:var(--text-body)}
+.tag[aria-pressed="true"]{background:var(--teal-700);border-color:var(--teal-700);color:var(--white)}
+.tag[aria-pressed="true"]:hover{background:var(--teal-800);border-color:var(--teal-800)}
+.tag:focus-visible,.chk input:focus-visible,th[data-k]:focus-visible,tbody tr:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
+.chk{display:inline-flex;gap:var(--space-2);align-items:center;font-size:var(--fs-paragraph-sm);color:var(--text-body);cursor:pointer}
+input[type=checkbox]{accent-color:var(--teal-700);width:16px;height:16px;margin:0;cursor:pointer}
+
+/* Stat cards (StatCard component) */
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-6);margin-top:var(--space-8)}
+.stat{background:var(--surface-page);border:1px solid var(--border-subtle);border-top:5px solid var(--yellow-500);box-shadow:var(--shadow-card);padding:var(--space-6);border-radius:var(--radius-none)}
+.stat .k{font-weight:var(--weight-medium);font-size:13px;letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-link);margin-bottom:14px}
+.stat .v{font-family:var(--font-sans);font-weight:var(--weight-heavy);font-size:var(--fs-stat);line-height:var(--lh-stat);letter-spacing:-0.5px;color:var(--text-strong);font-variant-numeric:tabular-nums;white-space:nowrap}
+.stat .q{font-size:var(--fs-paragraph-sm);line-height:var(--lh-body);margin-top:var(--space-3);color:var(--text-muted);font-variant-numeric:tabular-nums}
+
+/* Section cards (Card component, bordered) */
+.card{background:var(--surface-page);border:1px solid var(--border-subtle);border-radius:var(--radius-none);padding:var(--space-8)}
+.card-head{margin-bottom:var(--space-4)}
+.card-head .eqb-h5{margin:0}
+.card-head p{margin:var(--space-2) 0 0;font-size:var(--fs-paragraph-sm);color:var(--text-muted);max-width:80ch}
+.eqb-caption{margin:var(--space-4) 0 0}
+.two{display:grid;grid-template-columns:1fr;gap:var(--space-6)}
+
+/* Charts */
 .chart{position:relative;width:100%}
 .chart svg{display:block;width:100%;overflow:visible}
-.axis text{fill:var(--text-muted);font-size:11px;font-variant-numeric:tabular-nums}
-.gridline{stroke:var(--grid);stroke-width:1}
-.tip{position:absolute;pointer-events:none;background:var(--surface-1);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:12.5px;box-shadow:0 4px 14px rgba(0,0,0,.12);white-space:nowrap;display:none;z-index:2;font-variant-numeric:tabular-nums}
-.tip b{font-weight:620}
-.tip .r{display:flex;justify-content:space-between;gap:14px}
-.tip .r span:first-child{color:var(--text-secondary)}
-.grid2{display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px}
-table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:13px}
-th,td{padding:7px 8px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap}
-th:first-child,td:first-child,th:nth-child(2),td:nth-child(2),th:nth-child(3),td:nth-child(3){text-align:left}
-th{font-weight:600;color:var(--text-secondary);font-size:12px;cursor:pointer;user-select:none;position:sticky;top:0;background:var(--surface-1)}
-th[aria-sort="ascending"]::after{content:" ▲";font-size:9px}
-th[aria-sort="descending"]::after{content:" ▼";font-size:9px}
-tbody tr{cursor:pointer}
-tbody tr:hover{background:var(--accent-bg)}
-tbody tr.sel{background:var(--accent-bg)}
-tbody tr.off td{color:var(--text-muted)}
-tfoot td{font-weight:650;border-bottom:none;border-top:2px solid var(--border)}
-.tablewrap{overflow-x:auto;max-height:none}
-.src{font-size:11.5px;color:var(--text-muted)}
-.notes{color:var(--text-secondary);font-size:13px}
-.notes li{margin:0 0 6px}
-.err{padding:30px;text-align:center;color:var(--text-secondary)}
-a{color:var(--series-1)}
-@media (max-width:640px){.wrap{padding:18px 12px 36px}h1{font-size:20px}.kpi .val{font-size:21px}}
+.c-grid{stroke:rgba(5,42,48,.10);stroke-width:1}
+.c-axis{fill:var(--text-muted);font-family:var(--font-sans);font-size:11px;font-variant-numeric:tabular-nums}
+.c-line{fill:none;stroke:var(--teal-700);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.c-area{fill:rgba(21,90,113,.10)}
+.c-ref{stroke:var(--teal-700);stroke-width:1;stroke-dasharray:3 3}
+.c-ref-label{fill:var(--teal-700);font-family:var(--font-sans);font-weight:var(--weight-medium);font-size:12px}
+.c-dot{fill:var(--teal-700);stroke:var(--white);stroke-width:2}
+.c-cross{stroke:var(--teal-900);stroke-width:1;stroke-opacity:.35}
+.tip{position:absolute;pointer-events:none;background:var(--surface-page);border:1px solid var(--border-subtle);border-radius:var(--radius-none);box-shadow:var(--shadow-raised);padding:var(--space-3) var(--space-4);font-size:13px;line-height:1.4;white-space:nowrap;display:none;z-index:2;font-variant-numeric:tabular-nums;color:var(--text-body)}
+.tip .d{font-weight:var(--weight-medium);font-size:var(--fs-badge-sm);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-link);margin-bottom:var(--space-1)}
+.tip .r{display:flex;justify-content:space-between;gap:var(--space-4)}
+.tip .r span:first-child{color:var(--text-muted)}
+.tip .r span:last-child{font-weight:var(--weight-medium);color:var(--text-strong)}
+
+/* Table (.eqb-table) */
+.tablewrap{overflow-x:auto;margin:0 calc(-1 * var(--space-3))}
+.eqb-table td,.eqb-table th{white-space:nowrap}
+.eqb-table thead th[data-k]{cursor:pointer;user-select:none}
+.eqb-table thead th[aria-sort]::after{display:inline-block;margin-left:var(--space-1);content:"";border-left:4px solid transparent;border-right:4px solid transparent;vertical-align:middle}
+.eqb-table thead th[aria-sort="ascending"]::after{border-bottom:5px solid var(--teal-700)}
+.eqb-table thead th[aria-sort="descending"]::after{border-top:5px solid var(--teal-700)}
+.eqb-table tbody tr{cursor:pointer}
+.eqb-table tbody tr.sel td{background:var(--gray-200)}
+.eqb-table tbody tr.off td{color:var(--text-muted)}
+.eqb-table tbody td.fund{font-weight:var(--weight-medium);color:var(--text-strong)}
+.eqb-table tbody tr.off td.fund{font-weight:var(--weight-regular);color:var(--text-muted)}
+.eqb-table .cb{width:1%;padding-right:0}
+.eqb-table td.fund .src{display:block;font-weight:var(--weight-regular);font-size:13px;color:var(--text-muted)}
+
+/* Notes (soft card surface) */
+.notes{background:var(--surface-card);padding:var(--space-8);border-radius:var(--radius-none)}
+.notes ul{margin:var(--space-4) 0 0;padding-left:var(--space-5)}
+.notes li{margin:0 0 var(--space-3);font-size:var(--fs-paragraph-sm);line-height:var(--lh-body);max-width:90ch}
+.notes li::marker{color:var(--teal-700)}
+.notes b{font-weight:var(--weight-medium);color:var(--text-strong)}
+
+/* Footer */
+footer{margin-top:var(--space-12);padding-top:var(--space-6);border-top:1px solid var(--border-subtle);display:flex;justify-content:space-between;align-items:center;gap:var(--space-6);flex-wrap:wrap}
+footer img{height:24px;width:auto;display:block}
+footer .eqb-caption{margin:0}
+.err{padding:var(--space-8);text-align:center;color:var(--text-muted)}
+
+@media (max-width:1100px){
+  .stat .v{font-size:56px}
+}
+@media (max-width:760px){
+  .container{padding:var(--space-8) var(--container-pad-sm) var(--space-12)}
+  h1.eqb-h2{font-size:34px;line-height:1.1;letter-spacing:-0.6px}
+  .eqb-body-lg{font-size:var(--fs-paragraph);line-height:var(--lh-paragraph)}
+  .stats{grid-template-columns:1fr;gap:var(--space-4)}
+  .stat .v{font-size:52px}
+  .card,.notes{padding:var(--space-5)}
+  .eqb-h5{font-size:22px}
+}
 </style>
 </head>
 <body>
-<div class="viz-root">
-<div class="wrap">
+<main class="container">
   <header>
-    <h1>NVIDIA Holdings of Large State and Local Pension Funds</h1>
-    <p class="sub">Daily market value of the NVIDIA (NVDA) shares that 25 large U.S. public pension funds report holding, valued at each day's closing price.</p>
-    <div class="meta" id="meta">Loading…</div>
+    <div class="eyebrow"><span class="bar" aria-hidden="true"></span>Public pension investments</div>
+    <h1 class="eqb-h2">NVIDIA holdings of large state and local pension funds</h1>
+    <p class="eqb-body-lg lede">Daily market value of the NVIDIA (NVDA) shares that 25 large U.S. public pension funds report holding, valued at each day's closing price.</p>
+    <div class="meta" id="meta">Loading data</div>
   </header>
 
   <div class="controls" role="group" aria-label="Display options">
-    <div class="seg" id="basisSeg" role="group" aria-label="Share basis">
-      <button type="button" data-basis="disclosed" aria-pressed="true" title="Each day uses the shares from the most recent disclosure on or before that day">Shares as disclosed</button>
-      <button type="button" data-basis="latest" aria-pressed="false" title="Every day uses each fund's most recent disclosed share count, so changes reflect price only">Price effect only</button>
+    <div class="ctl" id="basisSeg" role="group" aria-label="Share basis">
+      <span class="ctl-label">Share basis</span>
+      <button type="button" class="tag eqb-tag--interactive" data-basis="disclosed" aria-pressed="true" title="Each day uses the shares from the most recent disclosure on or before that day">Shares as disclosed</button>
+      <button type="button" class="tag eqb-tag--interactive" data-basis="latest" aria-pressed="false" title="Every day uses each fund's most recent disclosed share count, so changes reflect price only">Price effect only</button>
     </div>
-    <div class="seg" id="rangeSeg" role="group" aria-label="Date range">
-      <button type="button" data-range="all" aria-pressed="true">YTD</button>
-      <button type="button" data-range="90" aria-pressed="false">3M</button>
-      <button type="button" data-range="30" aria-pressed="false">1M</button>
+    <div class="ctl" id="rangeSeg" role="group" aria-label="Date range">
+      <span class="ctl-label">Range</span>
+      <button type="button" class="tag eqb-tag--interactive" data-range="all" aria-pressed="true">YTD</button>
+      <button type="button" class="tag eqb-tag--interactive" data-range="90" aria-pressed="false">3M</button>
+      <button type="button" class="tag eqb-tag--interactive" data-range="30" aria-pressed="false">1M</button>
     </div>
     <label class="chk"><input type="checkbox" id="datedChk" checked> Include funds with 6/30/2025 holdings (*)</label>
   </div>
 
-  <section class="kpis" id="kpis" aria-live="polite"></section>
+  <div class="stats" id="kpis" aria-live="polite"></div>
 
   <section class="card" id="totalCard">
-    <div class="charthead">
-      <div><h2 id="totalTitle">Combined value of NVDA holdings</h2><div class="src" id="totalSub"></div></div>
+    <div class="card-head">
+      <h2 class="eqb-h5" id="totalTitle">Combined value of NVDA holdings</h2>
+      <p id="totalSub"></p>
     </div>
     <div class="chart" id="totalChart"></div>
   </section>
 
-  <div class="grid2">
-    <section class="card" id="ddCard">
-      <div class="charthead"><div><h2>Percent below prior peak</h2><div class="src">Combined value relative to its highest level up to each date</div></div></div>
-      <div class="chart" id="ddChart"></div>
-    </section>
-  </div>
-
-  <section class="card" id="fundsCard" style="margin-top:14px">
-    <div class="charthead">
-      <div><h2>By fund</h2><div class="src">Click a row to chart that fund. Uncheck a fund to remove it from the combined figures. Click a column header to sort.</div></div>
+  <section class="card" id="ddCard">
+    <div class="card-head">
+      <h2 class="eqb-h5">Percent below prior peak</h2>
+      <p>Combined value relative to its highest level up to each date.</p>
     </div>
-    <div class="tablewrap"><table id="fundTable"><thead></thead><tbody></tbody><tfoot></tfoot></table></div>
+    <div class="chart" id="ddChart"></div>
   </section>
 
-  <section class="card" id="fundCard" style="margin-top:14px">
-    <div class="charthead"><div><h2 id="fundTitle">Fund detail</h2><div class="src" id="fundSub"></div></div></div>
+  <section class="card" id="fundsCard">
+    <div class="card-head">
+      <h2 class="eqb-h5">By fund</h2>
+      <p>Select a row to chart that fund. Clear a fund's checkbox to remove it from the combined figures. Select a column header to sort.</p>
+    </div>
+    <div class="tablewrap">
+      <table class="eqb-table eqb-table--hover eqb-table--compact" id="fundTable"><thead></thead><tbody></tbody><tfoot></tfoot></table>
+    </div>
+  </section>
+
+  <section class="card" id="fundCard">
+    <div class="card-head">
+      <h2 class="eqb-h5" id="fundTitle">Fund detail</h2>
+      <p id="fundSub"></p>
+    </div>
     <div class="chart" id="fundChart"></div>
   </section>
 
-  <section class="card" id="notesCard" style="margin-top:14px">
-    <h2>About these figures</h2>
-    <ul class="notes">
+  <section class="notes" id="notesCard">
+    <div class="eyebrow">About these figures</div>
+    <ul>
       <li><b>Prices.</b> NVDA closing prices, not adjusted for dividends, from StockAnalysis.com, cross-checked against Yahoo Finance or another price source, starting 1/2/2026. A new close is added after each trading day.</li>
       <li><b>Holdings.</b> Shares come from each fund's own disclosures: SEC Form 13F filings for most funds, and published holdings listings, holdings reports, or annual comprehensive financial reports (ACFRs) for the rest. Each disclosure's share count applies from its as-of date until the next disclosure.</li>
       <li><b>Shares as disclosed vs. price effect only.</b> "Shares as disclosed" changes when a new disclosure takes effect as well as when the price moves. "Price effect only" holds each fund's latest disclosed share count fixed for the whole period, so every change comes from the price.</li>
       <li><b>Holdings are a floor.</b> 13F filings cover directly held and internally managed positions. Shares held through commingled funds or some external managers may not appear. Trades inside a quarter are not visible.</li>
       <li><b>* Dated holdings.</b> New York City (five funds combined), Georgia TRS, Massachusetts PRIM, Illinois TRS, and the WSIB Holdings Report last reported holdings as of 6/30/2025. Their share counts are held constant through the whole period. For MA PRIM, Illinois TRS and the WSIB Holdings Report, shares are derived from reported dollar values divided by the 6/30/2025 NVDA close ($157.99).</li>
       <li><b>Coverage.</b> North Carolina is not included. UC Regents and the WSIB 13F list no NVDA position.</li>
-      <li><b>Source data.</b> Equable Institute's NVIDIA tracking workbook (from the 10/23/2026 AI Exposure workbook). <span id="srcNote"></span></li>
     </ul>
   </section>
-</div>
-</div>
+
+  <footer>
+    <p class="eqb-caption" id="srcLine">Source: Equable Institute analysis of fund disclosures (from the 10/23/2026 AI Exposure workbook) and NVDA closing prices from StockAnalysis.com.</p>
+    <img src="equable-logo-lightbg.svg" alt="Equable Institute">
+  </footer>
+</main>
 
 <script>
 (function(){
 "use strict";
 const $=s=>document.querySelector(s);
 const state={basis:"disclosed",range:"all",dated:true,include:{},sel:null,sortKey:"latest",sortDir:-1};
-let D=null; // parsed data
+let D=null;
 
 // ---------- parsing ----------
 function num(v){
@@ -165,19 +213,13 @@ function dt(v){
 }
 function parse(raw){
   const days=[];
-  for(const r of raw.daily||[]){
-    const t=dt(r[0]), c=num(r[1]);
-    if(t!==null && c!==null) days.push({t,close:c});
-  }
+  for(const r of raw.daily||[]){const t=dt(r[0]),c=num(r[1]); if(t!==null&&c!==null) days.push({t,close:c});}
   days.sort((a,b)=>a.t-b.t);
   const funds=[];
   for(const r of raw.holdings||[]){
-    if(!r || r.length<6) continue;
+    if(!r||r.length<6) continue;
     const slots=[];
-    for(const k of [4,7,10,13]){
-      const t=dt(r[k]), sh=num(r[k+1]);
-      if(t!==null && sh!==null) slots.push({t,shares:sh,reported:num(r[k+2])});
-    }
+    for(const k of [4,7,10,13]){const t=dt(r[k]),sh=num(r[k+1]); if(t!==null&&sh!==null) slots.push({t,shares:sh});}
     if(!slots.length) continue;
     slots.sort((a,b)=>a.t-b.t);
     const name=String(r[0]||"").trim(), short=String(r[1]||name).trim();
@@ -189,28 +231,20 @@ function parse(raw){
 // ---------- calc ----------
 function sharesAt(f,t){let s=0;for(const sl of f.slots){if(sl.t<=t) s=sl.shares;}return s;}
 function fundShares(f,t){return state.basis==="latest"?f.latest.shares:sharesAt(f,t);}
-function active(f){return state.include[f.short] && (state.dated||!f.dated);}
+function active(f){return state.include[f.short]&&(state.dated||!f.dated);}
 function fundSeries(f){return D.days.map(d=>({t:d.t,close:d.close,v:d.close*fundShares(f,d.t)}));}
-function totalSeries(){
-  const fs=D.funds.filter(active);
-  return D.days.map(d=>{let v=0;for(const f of fs) v+=d.close*fundShares(f,d.t);return {t:d.t,close:d.close,v};});
-}
-function withPeak(s){let p=-Infinity,pt=null;return s.map(p0=>{if(p0.v>p){p=p0.v;pt=p0.t;}return Object.assign({},p0,{peak:p,peakT:pt,dd:p>0?p0.v/p-1:0});});}
-function stats(s){
-  if(!s.length) return null;
-  const last=s[s.length-1], prev=s.length>1?s[s.length-2]:null, first=s[0];
-  let pk=s[0],lo=s[0],mdd=0;
-  for(const p of s){if(p.v>pk.v) pk=p; if(p.v<lo.v) lo=p; if(p.dd<mdd) mdd=p.dd;}
-  return {last,prev,first,pk,lo,mdd};
-}
+function totalSeries(){const fs=D.funds.filter(active);return D.days.map(d=>{let v=0;for(const f of fs) v+=d.close*fundShares(f,d.t);return {t:d.t,close:d.close,v};});}
+function withPeak(s){let p=-Infinity,pt=null;return s.map(x=>{if(x.v>p){p=x.v;pt=x.t;}return Object.assign({},x,{peak:p,peakT:pt,dd:p>0?x.v/p-1:0});});}
+function stats(s){if(!s.length) return null;const last=s[s.length-1],prev=s.length>1?s[s.length-2]:null,first=s[0];let pk=s[0];for(const p of s){if(p.v>pk.v) pk=p;}return {last,prev,first,pk};}
 
 // ---------- format ----------
-const fmtDate=t=>{const d=new Date(t);return (d.getUTCMonth()+1)+"/"+d.getUTCDate()+"/"+d.getUTCFullYear();};
 const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const fmtDate=t=>{const d=new Date(t);return (d.getUTCMonth()+1)+"/"+d.getUTCDate()+"/"+d.getUTCFullYear();};
+const fmtLong=t=>{const d=new Date(t);return MON[d.getUTCMonth()]+" "+d.getUTCDate()+", "+d.getUTCFullYear();};
 const fmtAxisDate=t=>{const d=new Date(t);return MON[d.getUTCMonth()]+" "+d.getUTCDate();};
 function money(v,dp){
   if(v===null||!isFinite(v)) return "n/a";
-  const a=Math.abs(v), sg=v<0?"−":"";
+  const a=Math.abs(v),sg=v<0?"−":"";
   if(a>=1e9) return sg+"$"+(a/1e9).toFixed(dp===undefined?2:dp)+"B";
   if(a>=1e6) return sg+"$"+(a/1e6).toFixed(dp===undefined?1:dp)+"M";
   if(a>=1e3) return sg+"$"+(a/1e3).toFixed(0)+"K";
@@ -219,63 +253,62 @@ function money(v,dp){
 const signedMoney=v=>(v>0?"+":"")+money(v);
 const pct=(v,dp=1)=>v===null||!isFinite(v)?"n/a":(v>0?"+":v<0?"−":"")+Math.abs(v*100).toFixed(dp)+"%";
 const intf=v=>Math.round(v).toLocaleString("en-US");
-const cls=v=>v<0?"neg":v>0?"pos":"";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 // ---------- chart ----------
 function niceTicks(lo,hi,n){
-  const span=hi-lo||Math.abs(hi)||1, step0=span/n, mag=Math.pow(10,Math.floor(Math.log10(step0)));
-  const err=step0/mag, step=(err>=7.5?10:err>=3.5?5:err>=1.5?2:1)*mag;
-  const out=[];for(let v=Math.ceil(lo/step)*step;v<=hi+1e-9;v+=step) out.push(+v.toFixed(10));
-  return out;
+  const span=hi-lo||Math.abs(hi)||1,step0=span/n,mag=Math.pow(10,Math.floor(Math.log10(step0)));
+  const err=step0/mag,step=(err>=7.5?10:err>=3.5?5:err>=1.5?2:1)*mag;
+  const out=[];for(let v=Math.ceil(lo/step)*step;v<=hi+1e-9;v+=step) out.push(+v.toFixed(10));return out;
 }
 function lineChart(el,series,opt){
   el.innerHTML="";
-  const W=Math.max(280,el.clientWidth), H=opt.height||(W<560?220:300);
-  const m={l:opt.yw||64,r:14,t:12,b:26}, iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const W=Math.max(280,el.clientWidth),H=opt.height||(W<560?230:320);
+  const m={l:opt.yw||60,r:12,t:14,b:28},iw=W-m.l-m.r,ih=H-m.t-m.b;
   if(!series.length){el.innerHTML='<div class="err">No data</div>';return;}
-  const t0=series[0].t, t1=series[series.length-1].t;
+  const t0=series[0].t,t1=series[series.length-1].t;
   let ymin=Infinity,ymax=-Infinity;for(const p of series){ymin=Math.min(ymin,p.y);ymax=Math.max(ymax,p.y);}
   if(opt.refY!==undefined){ymax=Math.max(ymax,opt.refY);ymin=Math.min(ymin,opt.refY);}
-  if(opt.zeroTop){ymax=0;}
+  if(opt.zeroTop) ymax=0;
   const pad=(ymax-ymin)*0.08||1; if(!opt.zeroTop) ymax+=pad; ymin-=pad;
   if(opt.floorZero) ymin=Math.max(0,ymin);
   const ticks=niceTicks(ymin,ymax,W<560?4:5); ymin=Math.min(ymin,ticks[0]); if(!opt.zeroTop) ymax=Math.max(ymax,ticks[ticks.length-1]);
   const x=t=>m.l+(t1===t0?iw/2:(t-t0)/(t1-t0)*iw), y=v=>m.t+(ymax-v)/(ymax-ymin)*ih;
-  const NS="http://www.w3.org/2000/svg", svg=document.createElementNS(NS,"svg");
-  svg.setAttribute("viewBox","0 0 "+W+" "+H); svg.setAttribute("height",H); svg.setAttribute("role","img"); svg.setAttribute("aria-label",opt.label||"");
+  const NS="http://www.w3.org/2000/svg",svg=document.createElementNS(NS,"svg");
+  svg.setAttribute("viewBox","0 0 "+W+" "+H);svg.setAttribute("height",H);svg.setAttribute("role","img");svg.setAttribute("aria-label",opt.label||"");
   const mk=(tag,at,par)=>{const e=document.createElementNS(NS,tag);for(const k in at) e.setAttribute(k,at[k]);(par||svg).appendChild(e);return e;};
-  const ax=mk("g",{class:"axis"});
   for(const v of ticks){ if(v<ymin-1e-9||v>ymax+1e-9) continue;
-    mk("line",{class:"gridline",x1:m.l,x2:W-m.r,y1:y(v),y2:y(v)},ax);
-    const tx=mk("text",{x:m.l-8,y:y(v)+4,"text-anchor":"end"},ax); tx.textContent=opt.yfmt(v);
+    mk("line",{class:"c-grid",x1:m.l,x2:W-m.r,y1:y(v),y2:y(v)});
+    mk("text",{class:"c-axis",x:m.l-8,y:y(v)+4,"text-anchor":"end"}).textContent=opt.yfmt(v);
   }
-  // x ticks: month starts
-  const months=[]; {const d0=new Date(t0); let y0=d0.getUTCFullYear(),mo=d0.getUTCMonth()+1; while(true){const t=Date.UTC(y0,mo,1); if(t>t1) break; months.push(t); mo++; if(mo>11){mo=0;y0++;}}}
-  const span=(t1-t0)/864e5; let xt=months;
-  if(span<=45){xt=[];for(const p of series){const d=new Date(p.t);if(d.getUTCDay()===1) xt.push(p.t);} }
-  const maxTicks=Math.floor(iw/62); if(xt.length>maxTicks){const k=Math.ceil(xt.length/maxTicks); xt=xt.filter((_,i)=>i%k===0);}
-  for(const t of xt){const tx=mk("text",{x:x(t),y:H-6,"text-anchor":"middle"},ax); tx.textContent=span<=45?fmtAxisDate(t):MON[new Date(t).getUTCMonth()];}
-  if(opt.refY!==undefined){ mk("line",{x1:m.l,x2:W-m.r,y1:y(opt.refY),y2:y(opt.refY),stroke:"var(--ref)","stroke-width":1,"stroke-dasharray":"4 4"});
-    if(opt.refLabel){const tx=mk("text",{x:W-m.r,y:y(opt.refY)-5,"text-anchor":"end",fill:"var(--text-muted)","font-size":11}); tx.textContent=opt.refLabel;} }
-  let d=""; series.forEach((p,i)=>{d+=(i?"L":"M")+x(p.t).toFixed(1)+","+y(p.y).toFixed(1);});
-  if(opt.area){ mk("path",{d:d+"L"+x(t1)+","+y(opt.zeroTop?0:ymin)+"L"+x(t0)+","+y(opt.zeroTop?0:ymin)+"Z",fill:"var(--series-1-fill)"}); }
-  mk("path",{d,fill:"none",stroke:"var(--series-1)","stroke-width":2,"stroke-linejoin":"round","stroke-linecap":"round"});
-  // end marker + label
+  const span=(t1-t0)/864e5; let xt=[];
+  if(span<=45){for(const p of series){if(new Date(p.t).getUTCDay()===1) xt.push(p.t);}}
+  else {const d0=new Date(t0);let yy=d0.getUTCFullYear(),mo=d0.getUTCMonth()+1;while(true){const t=Date.UTC(yy,mo,1);if(t>t1) break;xt.push(t);mo++;if(mo>11){mo=0;yy++;}}}
+  const maxTicks=Math.floor(iw/62); if(xt.length>maxTicks){const k=Math.ceil(xt.length/maxTicks);xt=xt.filter((_,i)=>i%k===0);}
+  for(const t of xt) mk("text",{class:"c-axis",x:x(t),y:H-8,"text-anchor":"middle"}).textContent=span<=45?fmtAxisDate(t):MON[new Date(t).getUTCMonth()];
+  let d="";series.forEach((p,i)=>{d+=(i?"L":"M")+x(p.t).toFixed(1)+","+y(p.y).toFixed(1);});
+  const base=y(opt.zeroTop?0:ymin);
+  mk("path",{class:"c-area",d:d+"L"+x(t1).toFixed(1)+","+base+"L"+x(t0).toFixed(1)+","+base+"Z"});
+  if(opt.refY!==undefined){
+    mk("line",{class:"c-ref",x1:m.l,x2:W-m.r,y1:y(opt.refY),y2:y(opt.refY)});
+    if(opt.refLabel) mk("text",{class:"c-ref-label",x:W-m.r,y:y(opt.refY)-6,"text-anchor":"end"}).textContent=opt.refLabel;
+  }
+  mk("path",{class:"c-line",d});
   const lp=series[series.length-1];
-  mk("circle",{cx:x(lp.t),cy:y(lp.y),r:4,fill:"var(--series-1)",stroke:"var(--surface-1)","stroke-width":2});
-  // hover
-  const cross=mk("line",{y1:m.t,y2:m.t+ih,stroke:"var(--text-muted)","stroke-width":1,visibility:"hidden"});
-  const dot=mk("circle",{r:5,fill:"var(--series-1)",stroke:"var(--surface-1)","stroke-width":2,visibility:"hidden"});
+  mk("circle",{class:"c-dot",cx:x(lp.t),cy:y(lp.y),r:4.5});
+  const cross=mk("line",{class:"c-cross",y1:m.t,y2:m.t+ih,visibility:"hidden"});
+  const dot=mk("circle",{class:"c-dot",r:5.5,visibility:"hidden"});
   const hit=mk("rect",{x:m.l,y:0,width:iw,height:H,fill:"transparent"});
   el.appendChild(svg);
-  const tip=document.createElement("div"); tip.className="tip"; el.appendChild(tip);
+  const tip=document.createElement("div");tip.className="tip";el.appendChild(tip);
   function show(cx){
-    let best=0,bd=Infinity; for(let i=0;i<series.length;i++){const dd=Math.abs(x(series[i].t)-cx); if(dd<bd){bd=dd;best=i;}}
-    const p=series[best]; cross.setAttribute("x1",x(p.t)); cross.setAttribute("x2",x(p.t)); cross.setAttribute("visibility","visible");
-    dot.setAttribute("cx",x(p.t)); dot.setAttribute("cy",y(p.y)); dot.setAttribute("visibility","visible");
-    tip.innerHTML=opt.tip(p); tip.style.display="block";
-    const tw=tip.offsetWidth, px=x(p.t)/W*el.clientWidth; let left=px+12; if(left+tw>el.clientWidth) left=px-tw-12; if(left<0) left=0;
-    tip.style.left=left+"px"; tip.style.top=Math.max(0,y(p.y)/H*svg.clientHeight-50)+"px";
+    let best=0,bd=Infinity;for(let i=0;i<series.length;i++){const dd=Math.abs(x(series[i].t)-cx);if(dd<bd){bd=dd;best=i;}}
+    const p=series[best];
+    cross.setAttribute("x1",x(p.t));cross.setAttribute("x2",x(p.t));cross.setAttribute("visibility","visible");
+    dot.setAttribute("cx",x(p.t));dot.setAttribute("cy",y(p.y));dot.setAttribute("visibility","visible");
+    tip.innerHTML=opt.tip(p);tip.style.display="block";
+    const sc=el.clientWidth/W,tw=tip.offsetWidth,px=x(p.t)*sc;let left=px+14;if(left+tw>el.clientWidth) left=px-tw-14;if(left<0) left=0;
+    tip.style.left=left+"px";tip.style.top=Math.max(0,y(p.y)*sc-56)+"px";
   }
   function hide(){cross.setAttribute("visibility","hidden");dot.setAttribute("visibility","hidden");tip.style.display="none";}
   const toX=e=>{const r=svg.getBoundingClientRect();return (e.clientX-r.left)/r.width*W;};
@@ -285,125 +318,109 @@ function lineChart(el,series,opt){
 }
 
 // ---------- render ----------
-function rangeFilter(s){
-  if(state.range==="all"||!s.length) return s;
-  const cut=s[s.length-1].t-(+state.range)*864e5; return s.filter(p=>p.t>=cut);
-}
-const tipRow=(a,b,c)=>'<div class="r"><span>'+a+'</span><span'+(c?' class="'+c+'"':'')+'>'+b+'</span></div>';
+function rangeFilter(s){if(state.range==="all"||!s.length) return s;const cut=s[s.length-1].t-(+state.range)*864e5;return s.filter(p=>p.t>=cut);}
+const tipRow=(a,b)=>'<div class="r"><span>'+a+'</span><span>'+b+'</span></div>';
 
 function render(){
-  const full=withPeak(totalSeries()); const st=stats(full);
+  const full=withPeak(totalSeries()),st=stats(full);
   if(!st){$("#kpis").innerHTML='<div class="err">No closing prices found in the data.</div>';return;}
   const nInc=D.funds.filter(active).length;
   const basisTxt=state.basis==="latest"?"each fund's latest disclosed shares held constant (price effect only)":"shares as of each fund's most recent disclosure on or before each date";
-  const dchg=st.prev?st.last.v-st.prev.v:null, dchgP=st.prev&&st.prev.v?st.last.v/st.prev.v-1:null;
-  const cchg=st.prev?st.last.close/st.prev.close-1:null;
-  const ytd=st.last.v-st.first.v, ytdP=st.first.v?st.last.v/st.first.v-1:null;
-  const vsPk=st.last.v-st.pk.v, vsPkP=st.pk.v?st.last.v/st.pk.v-1:null;
+  const dchg=st.prev?st.last.v-st.prev.v:null,dchgP=st.prev&&st.prev.v?st.last.v/st.prev.v-1:null,cchg=st.prev?st.last.close/st.prev.close-1:null;
+  const ytd=st.last.v-st.first.v,ytdP=st.first.v?st.last.v/st.first.v-1:null;
+  const vsPk=st.last.v-st.pk.v,vsPkP=st.pk.v?st.last.v/st.pk.v-1:null;
   $("#kpis").innerHTML=[
-    ['Combined value, '+fmtDate(st.last.t), money(st.last.v), nInc+' funds · '+(state.basis==="latest"?'price effect only':'shares as disclosed')],
-    ['Change from prior close', dchg===null?'n/a':'<span class="'+cls(dchg)+'">'+signedMoney(dchg)+'</span>', dchgP===null?'':'<span class="'+cls(dchgP)+'">'+pct(dchgP,2)+'</span> · NVDA $'+st.last.close.toFixed(2)+' ('+pct(cchg,2)+')'],
-    ['Change since '+fmtDate(st.first.t), '<span class="'+cls(ytd)+'">'+signedMoney(ytd)+'</span>', '<span class="'+cls(ytdP)+'">'+pct(ytdP)+'</span> from '+money(st.first.v)],
-    ['Change from peak', '<span class="'+cls(vsPk)+'">'+signedMoney(vsPk)+'</span>', '<span class="'+cls(vsPkP)+'">'+pct(vsPkP)+'</span> · peak '+money(st.pk.v)+' on '+fmtDate(st.pk.t)]
-  ].map(k=>'<div class="card kpi"><div class="lbl">'+k[0]+'</div><div class="val">'+k[1]+'</div><div class="det">'+k[2]+'</div></div>').join("");
+    ['Combined value',money(st.last.v),'As of the '+fmtDate(st.last.t)+' close · '+nInc+' funds · '+(state.basis==="latest"?'price effect only':'shares as disclosed')],
+    ['Change from prior close',dchg===null?'n/a':signedMoney(dchg),dchgP===null?'':pct(dchgP,2)+' · NVDA closed at $'+st.last.close.toFixed(2)+' ('+pct(cchg,2)+')'],
+    ['Change since '+fmtDate(st.first.t),signedMoney(ytd),pct(ytdP)+' from '+money(st.first.v)],
+    ['Change from peak',signedMoney(vsPk),pct(vsPkP)+' from the '+money(st.pk.v)+' peak on '+fmtDate(st.pk.t)]
+  ].map(k=>'<div class="stat"><div class="k">'+k[0]+'</div><div class="v">'+k[1]+'</div><div class="q">'+k[2]+'</div></div>').join("");
 
-  $("#totalSub").textContent="Valued at each day's NVDA close using "+basisTxt+". Dashed line: period peak.";
+  $("#totalSub").textContent="Valued at each day's NVDA close using "+basisTxt+". Dashed line marks the period peak.";
   const vis=rangeFilter(full);
   lineChart($("#totalChart"),vis.map(p=>Object.assign({y:p.v},p)),{
-    label:"Combined value of NVDA holdings over time",yfmt:v=>money(v,0),yw:58,area:true,refY:st.pk.v,refLabel:"Peak "+money(st.pk.v)+" ("+fmtDate(st.pk.t)+")",
-    tip:p=>'<b>'+fmtDate(p.t)+'</b>'+tipRow("Combined value",money(p.v))+tipRow("NVDA close","$"+p.close.toFixed(2))+tipRow("Below prior peak",pct(p.dd),cls(p.dd))
+    label:"Combined value of NVDA holdings over time",yfmt:v=>money(v,0),yw:56,refY:st.pk.v,refLabel:"Peak "+money(st.pk.v)+" ("+fmtDate(st.pk.t)+")",
+    tip:p=>'<div class="d">'+fmtLong(p.t)+'</div>'+tipRow("Combined value",money(p.v))+tipRow("NVDA close","$"+p.close.toFixed(2))+tipRow("Below prior peak",pct(p.dd))
   });
   lineChart($("#ddChart"),vis.map(p=>Object.assign({y:p.dd},p)),{
-    label:"Percent below prior peak over time",yfmt:v=>Math.round(v*100)+"%",yw:46,zeroTop:true,area:true,height:$("#ddChart").clientWidth<560?170:200,
-    tip:p=>'<b>'+fmtDate(p.t)+'</b>'+tipRow("Below prior peak",pct(p.dd),cls(p.dd))+tipRow("Prior peak",money(p.peak)+" ("+fmtDate(p.peakT)+")")
+    label:"Percent below prior peak over time",yfmt:v=>Math.round(v*100)+"%",yw:46,zeroTop:true,height:$("#ddChart").clientWidth<560?180:220,
+    tip:p=>'<div class="d">'+fmtLong(p.t)+'</div>'+tipRow("Below prior peak",pct(p.dd))+tipRow("Prior peak",money(p.peak)+" ("+fmtDate(p.peakT)+")")
   });
   renderTable(st);
   renderFund();
 }
 
 function fundRow(f){
-  const s=withPeak(fundSeries(f)), st=stats(s);
-  const prev=st.prev?st.prev.v:null;
-  return {f,first:st.first.v,peak:st.pk.v,peakT:st.pk.t,latest:st.last.v,d1:prev===null?null:st.last.v-prev,vsPk:st.pk.v>0?st.last.v/st.pk.v-1:null,
-          shares:fundShares(f,st.last.t),asof:state.basis==="latest"?f.latest.t:(f.slots.filter(x=>x.t<=st.last.t).pop()||f.slots[0]).t};
+  const s=withPeak(fundSeries(f)),st=stats(s),prev=st.prev?st.prev.v:null;
+  return {f,first:st.first.v,peak:st.pk.v,latest:st.last.v,d1:prev===null?null:st.last.v-prev,vsPk:st.pk.v>0?st.last.v/st.pk.v-1:null,
+    shares:fundShares(f,st.last.t),asof:state.basis==="latest"?f.latest.t:(f.slots.filter(x=>x.t<=st.last.t).pop()||f.slots[0]).t};
 }
 const COLS=[
-  {k:"inc",h:"",sort:false},
+  {k:"inc",h:'<span class="sr">Include</span>',cls:"cb"},
   {k:"name",h:"Fund"},
-  {k:"src",h:"Source"},
-  {k:"shares",h:"NVDA shares"},
-  {k:"asof",h:"As of"},
-  {k:"first",h:"Value 1/2/2026"},
-  {k:"peak",h:"Peak value"},
-  {k:"latest",h:"Latest value"},
-  {k:"d1",h:"1-day change"},
-  {k:"vsPk",h:"Vs. peak"}
+  {k:"shares",h:"NVDA shares",num:1},{k:"asof",h:"As of",num:1},{k:"first",h:"Value 1/2/2026",num:1},
+  {k:"peak",h:"Peak value",num:1},{k:"latest",h:"Latest value",num:1},{k:"d1",h:"1-day change",num:1},{k:"vsPk",h:"Vs. peak",num:1}
 ];
 function renderTable(tot){
-  const rows=D.funds.map(fundRow);
-  const key=state.sortKey, dir=state.sortDir;
-  rows.sort((a,b)=>{
-    const va=key==="name"?a.f.short.toLowerCase():key==="src"?a.f.source:a[key], vb=key==="name"?b.f.short.toLowerCase():key==="src"?b.f.source:b[key];
-    if(va===vb) return 0; if(va===null||va===undefined) return 1; if(vb===null||vb===undefined) return -1;
-    return (va>vb?1:-1)*dir;
-  });
-  const th=COLS.map(c=>'<th data-k="'+c.k+'"'+(c.k===key?' aria-sort="'+(dir>0?'ascending':'descending')+'"':'')+(c.k==="inc"?' style="cursor:default;width:28px"':'')+' scope="col">'+c.h+'</th>').join("");
-  $("#fundTable thead").innerHTML="<tr>"+th+"</tr>";
-  const tb=$("#fundTable tbody"); tb.innerHTML="";
+  const rows=D.funds.map(fundRow),key=state.sortKey,dir=state.sortDir;
+  const val=(r,k)=>k==="name"?r.f.short.toLowerCase():k==="src"?r.f.source:r[k];
+  rows.sort((a,b)=>{const va=val(a,key),vb=val(b,key);if(va===vb) return 0;if(va==null) return 1;if(vb==null) return -1;return (va>vb?1:-1)*dir;});
+  $("#fundTable thead").innerHTML="<tr>"+COLS.map(c=>{
+    const cls=[c.num?"is-num":"",c.cls||""].join(" ").trim();
+    if(c.k==="inc") return '<th scope="col" class="'+cls+'" aria-label="Include in totals"></th>';
+    return '<th scope="col" data-k="'+c.k+'" tabindex="0" class="'+cls+'"'+(c.k===key?' aria-sort="'+(dir>0?'ascending':'descending')+'"':'')+'>'+c.h+'</th>';
+  }).join("")+"</tr>";
+  const tb=$("#fundTable tbody");tb.innerHTML="";
   for(const r of rows){
-    const on=active(r.f), tr=document.createElement("tr");
+    const on=active(r.f),tr=document.createElement("tr");tr.tabIndex=0;
     if(!on) tr.classList.add("off"); if(state.sel===r.f.short) tr.classList.add("sel");
     const disabled=r.f.dated&&!state.dated;
-    tr.innerHTML='<td><input type="checkbox" aria-label="Include '+r.f.short.replace(/"/g,"")+'" '+(state.include[r.f.short]?'checked':'')+(disabled?' disabled':'')+'></td>'+
-      '<td title=""></td><td></td>'+
-      '<td>'+intf(r.shares)+'</td><td>'+fmtDate(r.asof)+'</td><td>'+money(r.first)+'</td><td>'+money(r.peak)+'</td><td>'+money(r.latest)+'</td>'+
-      '<td class="'+(r.d1===null?'':cls(r.d1))+'">'+(r.d1===null?'n/a':signedMoney(r.d1))+'</td><td class="'+(r.vsPk===null?'':cls(r.vsPk))+'">'+(r.vsPk===null?'n/a':pct(r.vsPk))+'</td>';
-    tr.children[1].textContent=r.f.short; tr.children[1].title=r.f.name; tr.children[2].textContent=r.f.source;
+    tr.innerHTML='<td class="cb"><input type="checkbox" aria-label="Include '+esc(r.f.short)+'"'+(state.include[r.f.short]?' checked':'')+(disabled?' disabled':'')+'></td>'+
+      '<td class="fund" title="'+esc(r.f.name)+'">'+esc(r.f.short)+'<span class="src">'+esc(r.f.source)+'</span></td>'+
+      '<td class="is-num">'+intf(r.shares)+'</td><td class="is-num">'+fmtDate(r.asof)+'</td><td class="is-num">'+money(r.first)+'</td><td class="is-num">'+money(r.peak)+'</td><td class="is-num">'+money(r.latest)+'</td>'+
+      '<td class="is-num">'+(r.d1===null?'n/a':signedMoney(r.d1))+'</td><td class="is-num">'+(r.vsPk===null?'n/a':pct(r.vsPk))+'</td>';
     tr.querySelector("input").addEventListener("click",e=>{e.stopPropagation();state.include[r.f.short]=e.target.checked;render();});
-    tr.addEventListener("click",()=>{state.sel=r.f.short;render();document.getElementById("fundCard").scrollIntoView({behavior:"smooth",block:"nearest"});});
+    const pick=()=>{state.sel=r.f.short;render();document.getElementById("fundCard").scrollIntoView({behavior:"smooth",block:"nearest"});};
+    tr.addEventListener("click",pick);
+    tr.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();pick();}});
     tb.appendChild(tr);
   }
-  const inc=rows.filter(r=>active(r.f));
-  const sum=k=>inc.reduce((a,r)=>a+(r[k]||0),0);
-  $("#fundTable tfoot").innerHTML='<tr><td></td><td>Combined ('+inc.length+')</td><td></td><td>'+intf(sum("shares"))+'</td><td></td><td>'+money(tot.first.v)+'</td><td>'+money(tot.pk.v)+'</td><td>'+money(tot.last.v)+'</td><td class="'+cls(tot.prev?tot.last.v-tot.prev.v:0)+'">'+(tot.prev?signedMoney(tot.last.v-tot.prev.v):'n/a')+'</td><td class="'+cls(tot.last.v/tot.pk.v-1)+'">'+pct(tot.last.v/tot.pk.v-1)+'</td></tr>';
-  $("#fundTable thead").querySelectorAll("th").forEach(h=>{const k=h.dataset.k; if(k==="inc") return;
-    h.addEventListener("click",()=>{if(state.sortKey===k) state.sortDir*=-1; else {state.sortKey=k;state.sortDir=(k==="name"||k==="src")?1:-1;} render();});});
+  const inc=rows.filter(r=>active(r.f)),sum=k=>inc.reduce((a,r)=>a+(r[k]||0),0);
+  $("#fundTable tfoot").innerHTML='<tr><td></td><td>Combined ('+inc.length+')</td><td class="is-num">'+intf(sum("shares"))+'</td><td></td><td class="is-num">'+money(tot.first.v)+'</td><td class="is-num">'+money(tot.pk.v)+'</td><td class="is-num">'+money(tot.last.v)+'</td><td class="is-num">'+(tot.prev?signedMoney(tot.last.v-tot.prev.v):'n/a')+'</td><td class="is-num">'+pct(tot.last.v/tot.pk.v-1)+'</td></tr>';
+  $("#fundTable thead").querySelectorAll("th[data-k]").forEach(h=>{const k=h.dataset.k;
+    const go=()=>{if(state.sortKey===k) state.sortDir*=-1; else {state.sortKey=k;state.sortDir=(k==="name"||k==="src")?1:-1;} render();};
+    h.addEventListener("click",go);h.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}});});
 }
 
 function renderFund(){
-  const f=D.funds.find(x=>x.short===state.sel)||D.funds[0]; if(!f) return;
-  state.sel=f.short;
+  const f=D.funds.find(x=>x.short===state.sel)||D.funds[0];if(!f) return;state.sel=f.short;
   const s=withPeak(fundSeries(f));
   $("#fundTitle").textContent=f.name;
-  const disc=f.slots.map(x=>fmtDate(x.t)+": "+intf(x.shares)+" sh").join(" · ");
-  $("#fundSub").textContent=f.source+" · Disclosures used: "+disc+(f.latest.shares===0?" · No NVDA position reported":"");
-  const vis=rangeFilter(s);
-  lineChart($("#fundChart"),vis.map(p=>Object.assign({y:p.v},p)),{
-    label:"Value of "+f.short+" NVDA holdings over time",yfmt:v=>money(v,v>=1e9?1:0),yw:58,area:true,floorZero:true,
-    tip:p=>'<b>'+fmtDate(p.t)+'</b>'+tipRow("Value",money(p.v))+tipRow("Shares",intf(fundShares(f,p.t)))+tipRow("NVDA close","$"+p.close.toFixed(2))+tipRow("Below prior peak",pct(p.dd),cls(p.dd))
+  $("#fundSub").textContent=f.source+" · Disclosures used: "+f.slots.map(x=>fmtDate(x.t)+": "+intf(x.shares)+" shares").join(" · ")+(f.latest.shares===0?" · No NVDA position reported":"");
+  lineChart($("#fundChart"),rangeFilter(s).map(p=>Object.assign({y:p.v},p)),{
+    label:"Value of "+f.short+" NVDA holdings over time",yfmt:v=>money(v,v>=1e9?1:0),yw:56,floorZero:true,
+    tip:p=>'<div class="d">'+fmtLong(p.t)+'</div>'+tipRow("Value",money(p.v))+tipRow("Shares",intf(fundShares(f,p.t)))+tipRow("NVDA close","$"+p.close.toFixed(2))+tipRow("Below prior peak",pct(p.dd))
   });
 }
 
 function bindSeg(id,key){
   document.querySelectorAll(id+" button").forEach(b=>b.addEventListener("click",()=>{
-    state[key]=b.dataset[key]; document.querySelectorAll(id+" button").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false")); render();}));
+    state[key]=b.dataset[key];document.querySelectorAll(id+" button").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));render();}));
 }
 
 async function init(){
-  try{
-    const r=await fetch("data.json",{cache:"no-store"}); if(!r.ok) throw new Error("HTTP "+r.status);
-    const raw=await r.json(); D=parse(raw);
-  }catch(e){ $("#meta").textContent="Could not load the data file ("+e.message+")."; return; }
+  try{const r=await fetch("data.json",{cache:"no-store"});if(!r.ok) throw new Error("HTTP "+r.status);D=parse(await r.json());}
+  catch(e){$("#meta").textContent="Could not load the data file ("+e.message+")";return;}
   for(const f of D.funds) state.include[f.short]=f.include;
-  const nonzero=D.funds.slice().sort((a,b)=>b.latest.shares-a.latest.shares)[0]; state.sel=nonzero?nonzero.short:null;
+  const top=D.funds.slice().sort((a,b)=>b.latest.shares-a.latest.shares)[0];state.sel=top?top.short:null;
   const last=D.days[D.days.length-1];
-  let upd=""; if(D.raw.updated_at){const u=new Date(D.raw.updated_at); if(!isNaN(u)) upd=" · Updated "+u.toLocaleString("en-US",{timeZone:"America/New_York",month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"})+" ET";}
-  $("#meta").textContent="Prices through "+(last?fmtDate(last.t):"n/a")+" close · "+D.funds.length+" fund entries"+upd;
-  if(D.raw.updated_note) $("#srcNote").textContent="Latest update: "+D.raw.updated_note+".";
-  bindSeg("#basisSeg","basis"); bindSeg("#rangeSeg","range");
+  let upd="";if(D.raw.updated_at){const u=new Date(D.raw.updated_at);if(!isNaN(u)) upd=" · Updated "+u.toLocaleString("en-US",{timeZone:"America/New_York",month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"})+" ET";}
+  $("#meta").textContent="Prices through "+(last?fmtLong(last.t):"n/a")+" close"+upd;
+  bindSeg("#basisSeg","basis");bindSeg("#rangeSeg","range");
   $("#datedChk").addEventListener("change",e=>{state.dated=e.target.checked;render();});
   render();
-  let rt; new ResizeObserver(()=>{clearTimeout(rt);rt=setTimeout(render,120);}).observe(document.querySelector(".wrap"));
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(render);
+  let rt,lastW=0;new ResizeObserver(en=>{const w=en[0].contentRect.width;if(Math.abs(w-lastW)<2) return;lastW=w;clearTimeout(rt);rt=setTimeout(render,120);}).observe(document.querySelector(".container"));
 }
 init();
 })();

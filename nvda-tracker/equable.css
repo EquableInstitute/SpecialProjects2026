@@ -1,0 +1,451 @@
+/* ==========================================================================
+   Equable Design System tokens, vendored for the NVDA tracker.
+   Copied verbatim from the Equable Design System (Claude Design):
+   tokens/colors.css, typography.css, spacing.css, tables.css, plus the
+   @font-face rules (paths pointed at ./fonts) and the focus/tag states
+   from interactions.css. Do not edit values here; update from the design
+   system instead.
+   ========================================================================== */
+@font-face{font-family:"DIN Next LT Pro";src:url("fonts/din-next-lt-pro-light.woff2") format("woff2");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"DIN Next LT Pro";src:url("fonts/din-next-lt-pro-regular.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"DIN Next LT Pro";src:url("fonts/din-next-lt-pro-medium.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"DIN Next LT Pro";src:url("fonts/din-next-lt-pro-bold.woff2") format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"DIN Next LT Pro";src:url("fonts/din-next-lt-pro-heavy.woff2") format("woff2");font-weight:800;font-style:normal;font-display:swap}
+@font-face{font-family:"IBM Plex Serif";src:url("fonts/IBMPlexSerif-Light.woff2") format("woff2");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"IBM Plex Serif";src:url("fonts/IBMPlexSerif-Regular.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"IBM Plex Serif";src:url("fonts/IBMPlexSerif-Italic.woff2") format("woff2");font-weight:300 400;font-style:italic;font-display:swap}
+/* ==========================================================================
+   Equable — Color Tokens
+   Derived from the brand "Color Palette / Accessibility" style sheet.
+   Base ramps first, then semantic aliases. Prefer the semantic names in
+   product code so themes can shift underneath.
+   ========================================================================== */
+:root {
+  /* ---- Teal (primary brand family) ---- */
+  --teal-900: #052A30;   /* Primary Dark Teal — brand anchor, dark surfaces, display text */
+  --teal-800: #08495E;   /* Mid Dark Teal */
+  --teal-700: #155A71;   /* Teal — primary buttons, links, badges */
+  --teal-300: #8ACADD;   /* Light Blue — tints, illustration, accents on dark */
+
+  /* ---- Warm accents ---- */
+  --yellow-500: #FABE00; /* Signature Yellow — CTAs, highlights, stats */
+  --orange-600: #EE5D1A; /* Orange */
+  --coral-500:  #FF6542; /* Coral / red-orange — illustration, alerts */
+  --coral-400:  #FF8246; /* Light coral */
+
+  /* ---- Cool accents ---- */
+  --mint-400:   #99CEBE; /* Mint Green — illustration, soft surfaces */
+  --purple-500: #7774AA; /* Purple */
+  --purple-300: #A6A2E2; /* Light Purple */
+
+  /* ---- Neutrals ---- */
+  --ink-900:    #08181B; /* Near-black ink (icons / hairline text) */
+  --gray-200:   #E3EAED; /* Light blue-gray — soft card / band surfaces */
+  --gray-100:   #F5F5F5; /* Neutral gray — page chrome, nav bar */
+  --gray-050:   #F7F7F7; /* Off white */
+  --white:      #FFFFFF;
+
+  /* ===== Semantic aliases ===== */
+
+  /* Surfaces */
+  --surface-page:        var(--white);
+  --surface-tint:        var(--teal-300);  /* pale-blue hero / emphasis band */
+  --surface-muted:       var(--gray-100);
+  --surface-card:        var(--gray-200);
+  --surface-inverse:     var(--teal-900);
+  --surface-inverse-alt: var(--teal-800);
+  --surface-brand:       var(--teal-700);
+  --surface-accent:      var(--yellow-500);
+
+  /* Text */
+  --text-strong:    var(--teal-900);   /* default headings + body on light */
+  --text-body:      var(--teal-900);
+  --text-muted:     #4A6168;           /* desaturated teal for secondary copy */
+  --text-serif:     var(--teal-700);   /* editorial serif headings */
+  --text-on-dark:   var(--gray-200);   /* body copy on dark teal */
+  --text-on-dark-strong: var(--white);
+  --text-link:      var(--teal-700);
+
+  /* Lines & borders */
+  --border-subtle:  rgba(5, 42, 48, 0.12);
+  --border-strong:  var(--teal-900);
+  --border-on-dark: rgba(227, 234, 237, 0.24);
+
+  /* Focus / state */
+  --focus-ring:     var(--yellow-500);
+}
+/* ==========================================================================
+   Equable — Typography Tokens
+   Source of truth: the WP Manual "Style Sheet" frame (Desktop Large scale).
+
+   ROLE ASSIGNMENTS (from the manual, verbatim):
+     H2        IBM Plex Serif · Regular · 50 / 52 / -1.2px   ← big editorial headline
+     H3        DIN Next LT Pro · Medium  · 40 / 52
+     H4        DIN Next LT Pro · Regular · 36 / 40 / -1px
+     H5        IBM Plex Serif · Regular · 26 / 32            ← editorial sub-head
+     H6        DIN Next LT Pro · Regular · 24 / 28
+     Stat      DIN Next LT Pro · Heavy   · 72 / 72           ← big data number
+     Eyebrow   DIN Next LT Pro · Medium  · 15 / 19 / 1px
+     Breadcrumb DIN Next LT Pro · Regular · 16 / 16 / 1px
+     Button Lg DIN Next LT Pro · Medium  · 16 / 16
+     Button Sm DIN Next LT Pro · Medium  · 12 / 12
+     Badge Lg  DIN Next LT Pro · Regular · 14 / 12
+     Badge Sm  DIN Next LT Pro · Regular · 12 / 12
+     Para Lg   DIN Next LT Pro · Light   · 22 / 28
+     Para      DIN Next LT Pro · Regular · 18 / 24           ← default body
+     Para Sm   DIN Next LT Pro · Regular · 16 / 22
+     Caption   IBM Plex Serif · Light Italic · 16 / 22
+
+   Editorial headlines are SERIF (IBM Plex Serif). DIN carries everything
+   structural — sub-heads, stats, body, eyebrows, UI. This serif/sans split
+   is core to the brand.
+   ========================================================================== */
+:root {
+  /* Families */
+  --font-sans:  "DIN Next LT Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "IBM Plex Serif", ui-serif, Georgia, "Times New Roman", serif;
+
+  /* Weights — DIN Next LT Pro */
+  --weight-light:   300;
+  --weight-regular: 400;
+  --weight-medium:  500;
+  --weight-bold:    700;
+  --weight-heavy:   800;   /* DIN Next Heavy — used by Stat. Falls back to bold if face absent. */
+
+  /* ---- Type scale (Desktop Large — canonical) ---- */
+  --fs-stat: 72px;        /* DIN Heavy — big data figure */
+  --fs-h2:   50px;        /* IBM Plex Serif — editorial headline */
+  --fs-h3:   40px;        /* DIN Medium */
+  --fs-h4:   36px;        /* DIN Regular */
+  --fs-h5:   26px;        /* IBM Plex Serif */
+  --fs-h6:   24px;        /* DIN Regular */
+  --fs-paragraph-lg: 22px;/* DIN Light */
+  --fs-paragraph: 18px;   /* DIN Regular — default body */
+  --fs-paragraph-sm: 16px;/* DIN Regular */
+  --fs-breadcrumb: 16px;  /* DIN Regular, +1px */
+  --fs-eyebrow: 15px;     /* DIN Medium, +1px */
+  --fs-badge-lg: 14px;
+  --fs-badge-sm: 12px;
+  --fs-button-lg: 16px;   /* DIN Medium */
+  --fs-button-sm: 12px;   /* DIN Medium */
+  --fs-caption: 16px;     /* IBM Plex Serif Light Italic */
+
+  /* ---- Line heights (px-accurate to spec, expressed unitless where clean) ---- */
+  --lh-stat: 1.0; /* @kind other */         /* 72/72 */
+  --lh-h2: 1.04; /* @kind other */          /* 52/50 */
+  --lh-h3: 1.3; /* @kind other */           /* 52/40 */
+  --lh-h4: 1.11; /* @kind other */          /* 40/36 */
+  --lh-h5: 1.23; /* @kind other */          /* 32/26 */
+  --lh-h6: 1.17; /* @kind other */          /* 28/24 */
+  --lh-paragraph-lg: 1.27; /* @kind other *//* 28/22 */
+  --lh-paragraph: 1.33; /* @kind other */   /* 24/18 */
+  --lh-caption: 1.375; /* @kind other */    /* 22/16 */
+  --lh-tight: 1.0; /* @kind other */
+  --lh-snug: 1.15; /* @kind other */
+  --lh-heading: 1.2; /* @kind other */
+  --lh-body: 1.33; /* @kind other */
+  --lh-relaxed: 1.6; /* @kind other */
+
+  /* ---- Tracking ---- */
+  --tracking-eyebrow: 1px; /* @kind other */
+  --tracking-label: 1px; /* @kind other */
+  --tracking-h2: -1.2px; /* @kind other */
+  --tracking-h4: -1px; /* @kind other */
+  --tracking-tight: -1px; /* @kind other */
+
+  /* ---- Back-compat aliases (used by components authored earlier) ---- */
+  --fs-display-xl: var(--fs-stat);
+  --fs-display-lg: var(--fs-h2);
+  --fs-display-md: var(--fs-stat);   /* StatCard big number */
+  --fs-h1: var(--fs-h2);
+  --fs-title: var(--fs-h5);
+  --fs-body-lg: var(--fs-paragraph-lg);
+  --fs-body: var(--fs-paragraph);
+  --fs-body-sm: var(--fs-paragraph-sm);
+  --fs-label: var(--fs-eyebrow);
+}
+
+/* ==========================================================================
+   Reusable text-role classes — apply the spec without re-deriving values.
+   ========================================================================== */
+.eqb-stat {
+  font-family: var(--font-sans); font-weight: var(--weight-heavy);
+  font-size: var(--fs-stat); line-height: var(--lh-stat); letter-spacing: -0.5px;
+  color: var(--text-strong);
+}
+.eqb-h2 {
+  font-family: var(--font-serif); font-weight: var(--weight-regular);
+  font-size: var(--fs-h2); line-height: var(--lh-h2); letter-spacing: var(--tracking-h2);
+  color: var(--text-serif);
+}
+.eqb-h3 {
+  font-family: var(--font-sans); font-weight: var(--weight-medium);
+  font-size: var(--fs-h3); line-height: var(--lh-h3);
+  color: var(--text-strong);
+}
+.eqb-h4 {
+  font-family: var(--font-sans); font-weight: var(--weight-regular);
+  font-size: var(--fs-h4); line-height: var(--lh-h4); letter-spacing: var(--tracking-h4);
+  color: var(--text-strong);
+}
+.eqb-h5 {
+  font-family: var(--font-serif); font-weight: var(--weight-regular);
+  font-size: var(--fs-h5); line-height: var(--lh-h5);
+  color: var(--text-serif);
+}
+.eqb-h6 {
+  font-family: var(--font-sans); font-weight: var(--weight-regular);
+  font-size: var(--fs-h6); line-height: var(--lh-h6);
+  color: var(--text-strong);
+}
+.eqb-eyebrow {
+  font-family: var(--font-sans); font-weight: var(--weight-medium);
+  font-size: var(--fs-eyebrow); line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-eyebrow); text-transform: uppercase;
+  color: var(--text-link);
+}
+.eqb-body {
+  font-family: var(--font-sans); font-weight: var(--weight-regular);
+  font-size: var(--fs-paragraph); line-height: var(--lh-paragraph);
+  color: var(--text-body);
+}
+.eqb-body-lg {
+  font-family: var(--font-sans); font-weight: var(--weight-light);
+  font-size: var(--fs-paragraph-lg); line-height: var(--lh-paragraph-lg);
+  color: var(--text-body);
+}
+.eqb-caption {
+  font-family: var(--font-serif); font-weight: var(--weight-light); font-style: italic;
+  font-size: var(--fs-caption); line-height: var(--lh-caption);
+  color: var(--text-muted);
+}
+/* Back-compat */
+.eqb-display { font-family: var(--font-sans); font-weight: var(--weight-heavy); font-size: var(--fs-stat); line-height: var(--lh-stat); color: var(--text-strong); }
+.eqb-serif-title { font-family: var(--font-serif); font-weight: var(--weight-regular); font-size: var(--fs-h2); line-height: var(--lh-h2); letter-spacing: var(--tracking-h2); color: var(--text-serif); }
+/* ==========================================================================
+   Equable — Spacing, Radius, Shadow & Layout Tokens
+   Spacing is an 8px-based scale (with a 4px half-step).
+   The defining shape signature is the "notched pill": a fully rounded pill
+   with exactly ONE squared corner — it echoes the logo mark's flat edge.
+   Cards & content blocks are otherwise SHARP (0 radius).
+   ========================================================================== */
+:root {
+  /* Spacing scale */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --space-32: 128px;
+
+  /* Radius */
+  --radius-none: 0px;       /* cards, image frames, badges, inputs */
+  --radius-sm: 4px;
+  --radius-pill: 9999px;    /* fully rounded */
+  --radius-notch: 20px;     /* notched-pill corner radius */
+
+  /* Signature notched-pill corner sets (top-right squared = "Corner Up") */
+  --notch-up:    20px 0 20px 20px; /* @kind radius */
+  --notch-down:  20px 20px 20px 0; /* @kind radius */
+
+  /* Shadows — used sparingly; the brand is mostly flat */
+  --shadow-card: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
+  --shadow-raised: 0px 6px 20px -4px rgba(5, 42, 48, 0.18);
+  --shadow-overlay: 0px 18px 48px -12px rgba(5, 42, 48, 0.32);
+
+  /* Layout */
+  --container-max: 1280px;
+  --container-pad: 80px;     /* desktop gutter */
+  --container-pad-sm: 24px;  /* mobile gutter */
+  --section-gap: 96px;       /* vertical rhythm between page sections */
+
+  /* Motion */
+  --ease-standard: cubic-bezier(0.2, 0.6, 0.2, 1); /* @kind other */
+  --dur-fast: 120ms; /* @kind other */
+  --dur-base: 200ms; /* @kind other */
+  --dur-slow: 320ms; /* @kind other */
+}
+/* ==========================================================================
+   Equable — Table Styling
+   Data tables for reports, research, and the pension data hub. Follows the
+   brand's structural language: SHARP corners, flat fills, hairline rules,
+   editorial whitespace, tabular figures. Column headers are ALL-CAPS DIN
+   labels — the brand's signature typographic tic.
+
+   Usage — apply .eqb-table to a plain <table>. Modifiers stack:
+     <table class="eqb-table eqb-table--striped">…</table>   (light bg)
+     <table class="eqb-table eqb-table--dark">…</table>      (dark teal bg)
+   Right-align numeric cells with class .is-num on the <th>/<td>.
+
+   Modifiers: --striped  --hover  --compact  --accent (yellow header rule)
+              --dark     (for use on --surface-inverse / dark-teal bands)
+   ========================================================================== */
+:root {
+  --table-cell-x:      var(--space-4);   /* 16px horizontal cell padding */
+  --table-cell-y:      var(--space-3);   /* 12px vertical cell padding   */
+  --table-cell-y-lg:   14px;             /* body rows breathe a touch more */
+  --table-head-size:   13px;             /* uppercase DIN label */
+  --table-body-size:   var(--fs-paragraph-sm);  /* 16px */
+
+  /* dark-surface fills for zebra / hover — tuned to sit on dark teal */
+  --table-stripe-dark: rgba(255, 255, 255, 0.045);
+  --table-hover-dark:  rgba(255, 255, 255, 0.09);
+  --table-head-rule-dark: rgba(227, 234, 237, 0.45);
+}
+
+/* ---- Base ---------------------------------------------------------------- */
+.eqb-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-sans);
+  font-size: var(--table-body-size);
+  line-height: 1.4;
+  color: var(--text-body);
+  text-align: left;
+  border-radius: var(--radius-none);
+}
+
+/* Caption / source line — serif light italic, left-aligned like editorial captions */
+.eqb-table caption {
+  caption-side: top;
+  text-align: left;
+  font-family: var(--font-serif);
+  font-weight: var(--weight-light);
+  font-style: italic;
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  color: var(--text-muted);
+  padding-bottom: var(--space-3);
+}
+.eqb-table caption.eqb-table__source {
+  caption-side: bottom;
+  padding-top: var(--space-3);
+  padding-bottom: 0;
+}
+
+/* Column headers — ALL-CAPS DIN Medium labels, +1px tracking */
+.eqb-table thead th {
+  font-weight: var(--weight-medium);
+  font-size: var(--table-head-size);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-strong);
+  padding: var(--table-cell-y) var(--table-cell-x);
+  vertical-align: bottom;
+  border-bottom: 2px solid var(--border-strong);
+  white-space: nowrap;
+}
+
+/* Body cells — hairline rules, generous vertical rhythm */
+.eqb-table tbody td {
+  padding: var(--table-cell-y-lg) var(--table-cell-x);
+  vertical-align: top;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-body);
+}
+.eqb-table tbody th {
+  padding: var(--table-cell-y-lg) var(--table-cell-x);
+  text-align: left;
+  vertical-align: top;
+  font-weight: var(--weight-medium);
+  color: var(--text-strong);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Optional row-group footer (totals) — strong closing rule + medium weight */
+.eqb-table tfoot td,
+.eqb-table tfoot th {
+  padding: var(--table-cell-y-lg) var(--table-cell-x);
+  font-weight: var(--weight-medium);
+  color: var(--text-strong);
+  border-top: 2px solid var(--border-strong);
+}
+
+/* Numeric columns — right-aligned, tabular figures */
+.eqb-table .is-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* ---- Modifiers ----------------------------------------------------------- */
+
+/* Zebra striping */
+.eqb-table.eqb-table--striped tbody tr:nth-child(even) td,
+.eqb-table.eqb-table--striped tbody tr:nth-child(even) th {
+  background: var(--gray-050);
+}
+
+/* Row hover (interactive tables) */
+.eqb-table.eqb-table--hover tbody tr {
+  transition: background var(--dur-fast) var(--ease-standard);
+}
+.eqb-table.eqb-table--hover tbody tr:hover td,
+.eqb-table.eqb-table--hover tbody tr:hover th {
+  background: var(--gray-100);
+}
+
+/* Compact density */
+.eqb-table.eqb-table--compact thead th,
+.eqb-table.eqb-table--compact tbody td,
+.eqb-table.eqb-table--compact tbody th,
+.eqb-table.eqb-table--compact tfoot td,
+.eqb-table.eqb-table--compact tfoot th {
+  padding: var(--space-2) var(--space-3);
+}
+
+/* Yellow header accent — the one yellow moment */
+.eqb-table.eqb-table--accent thead th {
+  border-bottom-color: var(--yellow-500);
+}
+
+/* ---- Dark variant (on --surface-inverse / dark-teal bands) --------------- */
+.eqb-table.eqb-table--dark {
+  color: var(--text-on-dark);
+}
+.eqb-table.eqb-table--dark caption {
+  color: var(--text-on-dark);
+  opacity: 0.72;
+}
+.eqb-table.eqb-table--dark thead th {
+  color: var(--text-on-dark-strong);
+  border-bottom-color: var(--table-head-rule-dark);
+}
+.eqb-table.eqb-table--dark tbody td {
+  color: var(--text-on-dark);
+  border-bottom-color: var(--border-on-dark);
+}
+.eqb-table.eqb-table--dark tbody th {
+  color: var(--text-on-dark-strong);
+  border-bottom-color: var(--border-on-dark);
+}
+.eqb-table.eqb-table--dark tfoot td,
+.eqb-table.eqb-table--dark tfoot th {
+  color: var(--text-on-dark-strong);
+  border-top-color: var(--table-head-rule-dark);
+}
+.eqb-table.eqb-table--dark.eqb-table--striped tbody tr:nth-child(even) td,
+.eqb-table.eqb-table--dark.eqb-table--striped tbody tr:nth-child(even) th {
+  background: var(--table-stripe-dark);
+}
+.eqb-table.eqb-table--dark.eqb-table--hover tbody tr:hover td,
+.eqb-table.eqb-table--dark.eqb-table--hover tbody tr:hover th {
+  background: var(--table-hover-dark);
+}
+.eqb-table.eqb-table--dark.eqb-table--accent thead th {
+  border-bottom-color: var(--yellow-500);
+}
+/* ---- From interactions.css ---- */
+.eqb-tag--interactive { cursor: pointer; transition: background var(--dur-base) var(--ease-standard), border-color var(--dur-base) var(--ease-standard); }
+.eqb-tag--interactive:hover { background: rgba(21, 90, 113, 0.08); }
+.eqb-link { color: var(--text-link); text-decoration: none; box-shadow: inset 0 -1px 0 0 currentColor; transition: opacity var(--dur-base) var(--ease-standard); }
+.eqb-link:hover { opacity: 0.7; }
