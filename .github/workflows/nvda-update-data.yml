@@ -1,0 +1,42 @@
+name: Update NVDA tracker data from Google Sheet
+
+on:
+  schedule:
+    # Weekdays 23:47 UTC = 6:47 PM EST / 7:47 PM EDT, after the Claude task fills the sheet (5:41 PM ET)
+    - cron: "47 23 * * 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nvda-update-data
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Rebuild nvda-tracker/data.json from the sheet
+        env:
+          DAILY_CSV_URL: ${{ vars.DAILY_CSV_URL }}
+          HOLDINGS_CSV_URL: ${{ vars.HOLDINGS_CSV_URL }}
+        run: python nvda-tracker/scripts/update_data.py
+
+      - name: Commit if changed
+        run: |
+          if git diff --quiet -- nvda-tracker/data.json; then
+            echo "No changes to commit."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+            git add nvda-tracker/data.json
+            git commit -m "Update NVDA tracker data $(TZ=America/New_York date +%F)"
+            git push
+          fi
