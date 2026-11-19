@@ -174,7 +174,7 @@ footer .eqb-caption{margin:0}
   <section class="notes" id="notesCard">
     <div class="eyebrow">About these figures</div>
     <ul>
-      <li><b>Prices.</b> NVDA closing prices, not adjusted for dividends, from StockAnalysis.com, cross-checked against Yahoo Finance or another price source, starting 1/2/2026. A new close is added after each trading day.</li>
+      <li><b>Prices.</b> NVDA closing prices, not adjusted for dividends, starting 1/2/2026. Closes come from Google Finance and StockAnalysis.com, cross-checked against a second source. On trading days, the current day's row holds the Google Finance price recorded at about 10 am and 1 pm ET (which may be delayed up to 20 minutes) and is replaced by the closing price after 4 pm.</li>
       <li><b>Holdings.</b> Shares come from each fund's own disclosures: SEC Form 13F filings for most funds, and published holdings listings, holdings reports, or annual comprehensive financial reports (ACFRs) for the rest. Each disclosure's share count applies from its as-of date until the next disclosure.</li>
       <li><b>Shares as disclosed vs. price effect only.</b> "Shares as disclosed" changes when a new disclosure takes effect as well as when the price moves. "Price effect only" holds each fund's latest disclosed share count fixed for the whole period, so every change comes from the price.</li>
       <li><b>Holdings are a floor.</b> 13F filings cover directly held and internally managed positions. Shares held through commingled funds or some external managers may not appear. Trades inside a quarter are not visible.</li>
@@ -332,9 +332,10 @@ function render(){
   const dchg=st.prev?st.last.v-st.prev.v:null,dchgP=st.prev&&st.prev.v?st.last.v/st.prev.v-1:null,cchg=st.prev?st.last.close/st.prev.close-1:null;
   const ytd=st.last.v-st.first.v,ytdP=st.first.v?st.last.v/st.first.v-1:null;
   const vsPk=st.last.v-st.pk.v,vsPkP=st.pk.v?st.last.v/st.pk.v-1:null;
+  const intra=isIntraday();
   $("#kpis").innerHTML=[
-    ['Combined value',money(st.last.v),'As of the '+fmtDate(st.last.t)+' close · '+nInc+' funds · '+(state.basis==="latest"?'price effect only':'shares as disclosed')],
-    ['Change from prior close',dchg===null?'n/a':signedMoney(dchg),dchgP===null?'':pct(dchgP,2)+' · NVDA closed at $'+st.last.close.toFixed(2)+' ('+pct(cchg,2)+')'],
+    ['Combined value',money(st.last.v),'As of the '+fmtDate(st.last.t)+(intra?' intraday price (not yet the close)':' close')+' · '+nInc+' funds · '+(state.basis==="latest"?'price effect only':'shares as disclosed')],
+    ['Change from prior close',dchg===null?'n/a':signedMoney(dchg),dchgP===null?'':pct(dchgP,2)+' · NVDA '+(intra?'intraday price $':'closed at $')+st.last.close.toFixed(2)+' ('+pct(cchg,2)+')'],
     ['Change since '+fmtDate(st.first.t),signedMoney(ytd),pct(ytdP)+' from '+money(st.first.v)],
     ['Change from peak',signedMoney(vsPk),pct(vsPkP)+' from the '+money(st.pk.v)+' peak on '+fmtDate(st.pk.t)]
   ].map(k=>'<div class="stat"><div class="k">'+k[0]+'</div><div class="v">'+k[1]+'</div><div class="q">'+k[2]+'</div></div>').join("");
@@ -354,6 +355,11 @@ function render(){
   renderLive(st);
 }
 
+function isIntraday(){
+  const L=D.raw.live;if(!L||!L.trade_time||!D.days.length) return false;
+  const m=String(L.trade_time).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2})/);if(!m) return false;
+  return Date.UTC(+m[3],+m[1]-1,+m[2])===D.days[D.days.length-1].t&&(+m[4]*60+ +m[5])<960;
+}
 function renderLive(st){
   const el=$("#live"),L=D.raw.live;
   const p=L?num(L.price):null;
@@ -362,7 +368,7 @@ function renderLive(st){
   const pc=num(L.prior_close),chg=pc?p/pc-1:null;
   el.innerHTML='<b>Latest NVDA price: $'+p.toFixed(2)+'</b>'+(chg!==null?' ('+pct(chg,2)+' from the prior close of $'+pc.toFixed(2)+')':'')+
     ' · Last trade '+esc(L.trade_time||'n/a')+' ET, from Google Finance; may be delayed up to 20 minutes.'+
-    ' Combined value at this price: <b>'+money(sh*p)+'</b> ('+(state.basis==="latest"?'price effect only':'shares as disclosed')+'). Charts, cards and table use daily closing prices.';
+    ' Combined value at this price: <b>'+money(sh*p)+'</b> ('+(state.basis==="latest"?'price effect only':'shares as disclosed')+'). During trading hours, today\'s row in the charts, cards and table uses the price recorded at the most recent scheduled update (about 10 am and 1 pm ET); it is replaced by the closing price after the close.';
   el.hidden=false;
 }
 
@@ -424,14 +430,47 @@ function bindSeg(id,key){
     state[key]=b.dataset[key];document.querySelectorAll(id+" button").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));render();}));
 }
 
+// Published-to-web CSVs of the Google Sheet "NVIDIA Tracking (live)". data.json is the fallback.
+const SHEET_PUB="https://docs.google.com/spreadsheets/d/e/2PACX-1vTyzsGlOrd91kpXTSe15QxDTvuMzrm7070jzsONLn352WW2w-z0RXC6YkhYN6KVwFX1oAmcLl5AmWwW/pub";
+const GID_DAILY="1090873625",GID_HOLD="162926829";
+function csvRows(t){
+  const rows=[];let row=[],f="",q=false;
+  for(let i=0;i<t.length;i++){const c=t[i];
+    if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++;}else q=false;}else f+=c;}
+    else if(c==='"') q=true;
+    else if(c===","){row.push(f);f="";}
+    else if(c==="\n"||c==="\r"){if(c==="\r"&&t[i+1]==="\n") i++;row.push(f);rows.push(row);row=[];f="";}
+    else f+=c;}
+  if(f!==""||row.length){row.push(f);rows.push(row);}
+  return rows;
+}
+async function getCsv(gid){
+  const r=await fetch(SHEET_PUB+"?gid="+gid+"&single=true&output=csv&t="+Date.now(),{cache:"no-store"});
+  if(!r.ok) throw new Error("HTTP "+r.status);
+  const t=await r.text();if(/^\s*</.test(t)) throw new Error("not CSV");return csvRows(t);
+}
+async function loadSheet(){
+  const [dv,hd]=await Promise.all([getCsv(GID_DAILY),getCsv(GID_HOLD)]);
+  // Sheet rows 8-258 (Daily Values A:B), 9-34 (Holdings A:R), row 3 = live price cells
+  const daily=dv.slice(7,258).map(r=>[r[0]||"",r[1]||""]);
+  const holdings=hd.slice(8,34).map(r=>r.slice(0,18));
+  if(!daily.length||!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(daily[0][0])||!holdings.length) throw new Error("unexpected sheet layout");
+  const l3=dv[2]||[];
+  const live=num(l3[1])!==null?{price:l3[1],trade_time:l3[3],prior_close:l3[5]}:null;
+  return {daily,holdings,live,source:"sheet"};
+}
 async function init(){
-  try{const r=await fetch("data.json",{cache:"no-store"});if(!r.ok) throw new Error("HTTP "+r.status);D=parse(await r.json());}
-  catch(e){$("#meta").textContent="Could not load the data file ("+e.message+")";return;}
+  try{D=parse(await loadSheet());}
+  catch(e1){
+    try{const r=await fetch("data.json",{cache:"no-store"});if(!r.ok) throw new Error("HTTP "+r.status);D=parse(await r.json());}
+    catch(e){$("#meta").textContent="Could not load the data ("+e.message+")";return;}
+  }
   for(const f of D.funds) state.include[f.short]=f.include;
   const top=D.funds.slice().sort((a,b)=>b.latest.shares-a.latest.shares)[0];state.sel=top?top.short:null;
   const last=D.days[D.days.length-1];
-  let upd="";if(D.raw.updated_at){const u=new Date(D.raw.updated_at);if(!isNaN(u)) upd=" · Updated "+u.toLocaleString("en-US",{timeZone:"America/New_York",month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"})+" ET";}
-  $("#meta").textContent="Prices through "+(last?fmtLong(last.t):"n/a")+" close"+upd;
+  let upd="";if(D.raw.source==="sheet") upd=" · Read from the Google Sheet "+new Date().toLocaleString("en-US",{timeZone:"America/New_York",month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"})+" ET";
+  else if(D.raw.updated_at){const u=new Date(D.raw.updated_at);if(!isNaN(u)) upd=" · Updated "+u.toLocaleString("en-US",{timeZone:"America/New_York",month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"})+" ET";}
+  $("#meta").textContent="Prices through "+(last?fmtLong(last.t):"n/a")+(isIntraday()?" (intraday price, not yet the close)":" close")+upd;
   bindSeg("#basisSeg","basis");bindSeg("#rangeSeg","range");
   $("#datedChk").addEventListener("change",e=>{state.dated=e.target.checked;render();});
   render();
