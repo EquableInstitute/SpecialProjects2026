@@ -17,15 +17,26 @@ body{background:var(--surface-page);color:var(--text-body);font-family:var(--fon
 section{margin-top:var(--space-12)}
 
 /* Header */
+.brand{display:block;width:max-content;margin-bottom:var(--space-10)}
+.brand img{display:block;height:32px;width:auto}
+.brand:focus-visible{outline:2px solid var(--focus-ring);outline-offset:4px}
+@media (max-width:760px){.brand{margin-bottom:var(--space-6)}.brand img{height:26px}}
 .eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:var(--font-sans);font-weight:var(--weight-medium);font-size:var(--fs-eyebrow);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-link)}
 .eyebrow .bar{width:28px;height:3px;background:var(--yellow-500);flex:none}
-h1.eqb-h2{margin:var(--space-4) 0 var(--space-4);max-width:22ch}
-.lede{margin:0;max-width:60ch}
+h1.eqb-h2{margin:var(--space-4) 0 var(--space-4);max-width:none}
+.lede{margin:0;max-width:none}
 .meta{margin-top:var(--space-4);font-weight:var(--weight-medium);font-size:var(--fs-badge-sm);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-muted)}
 .live{margin:var(--space-3) 0 0;max-width:80ch;font-size:var(--fs-paragraph-sm);line-height:var(--lh-body);color:var(--text-body);font-variant-numeric:tabular-nums}
 .live b{font-weight:var(--weight-medium);color:var(--text-strong)}
-.natm{margin:var(--space-6) 0 0;max-width:90ch;color:var(--text-body)}
-.natm b{font-weight:var(--weight-medium);color:var(--text-strong)}
+.natm{margin:var(--space-8) 0 0;padding:var(--space-6);background:var(--surface-card);color:var(--text-body)}
+.nsteps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-5);margin-top:var(--space-4)}
+.nstep{border-top:3px solid var(--teal-700);padding-top:var(--space-3)}
+.nstep .nn{font-weight:var(--weight-medium);font-size:var(--fs-badge-sm);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-link)}
+.nstep .nh{font-weight:var(--weight-medium);color:var(--text-strong);margin-top:var(--space-1)}
+.nstep .nv{font-family:var(--font-sans);font-weight:var(--weight-heavy);font-size:34px;line-height:1.1;color:var(--text-strong);margin-top:var(--space-2);font-variant-numeric:tabular-nums}
+.nstep .nq{font-size:var(--fs-paragraph-sm);line-height:var(--lh-body);color:var(--text-muted);margin-top:var(--space-2)}
+@media (max-width:900px){.nsteps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.nsteps{grid-template-columns:1fr}}
 .kfoot{margin:var(--space-4) 0 0;max-width:90ch;color:var(--text-muted)}
 .eqb-table tbody tr.undis{cursor:default}
 .eqb-table tbody tr.undis td{color:var(--text-muted)}
@@ -52,6 +63,7 @@ input[type=checkbox]{accent-color:var(--teal-700);width:16px;height:16px;margin:
 .card{background:var(--surface-page);border:1px solid var(--border-subtle);border-radius:var(--radius-none);padding:var(--space-8)}
 .card-head{margin-bottom:var(--space-4)}
 .card-head .eqb-h5{margin:0}
+.card-head .rangeSeg{margin-top:var(--space-4)}
 .card-head p{margin:var(--space-2) 0 0;font-size:var(--fs-paragraph-sm);color:var(--text-muted);max-width:80ch}
 .eqb-caption{margin:var(--space-4) 0 0}
 .two{display:grid;grid-template-columns:1fr;gap:var(--space-6)}
@@ -118,6 +130,7 @@ footer .eqb-caption{margin:0}
 <body>
 <main class="container">
   <header>
+    <a class="brand" href="https://equable.org" aria-label="Equable Institute home"><img src="equable-logo-lightbg.svg" alt="Equable Institute" width="170" height="32"></a>
     <div class="eyebrow"><span class="bar" aria-hidden="true"></span>Public pension investments</div>
     <h1 class="eqb-h2">NVIDIA holdings of large state and local pension funds</h1>
     <p class="eqb-body-lg lede">Daily market value of NVIDIA (NVDA) shares that 25 large U.S. public pension funds report holding, valued at each day's closing price.</p>
@@ -131,23 +144,23 @@ footer .eqb-caption{margin:0}
       <button type="button" class="tag eqb-tag--interactive" data-basis="disclosed" aria-pressed="true" title="Each day uses the shares from the most recent disclosure on or before that day">Shares as disclosed</button>
       <button type="button" class="tag eqb-tag--interactive" data-basis="national" aria-pressed="false" hidden title="Scales the sample's NVDA holdings, as a share of the sample funds' total assets, to all U.S. state and local pension assets">National estimate</button>
     </div>
-    <div class="ctl" id="rangeSeg" role="group" aria-label="Date range">
-      <span class="ctl-label">Range</span>
-      <button type="button" class="tag eqb-tag--interactive" data-range="all" aria-pressed="true">YTD</button>
-      <button type="button" class="tag eqb-tag--interactive" data-range="90" aria-pressed="false">3M</button>
-      <button type="button" class="tag eqb-tag--interactive" data-range="30" aria-pressed="false">1M</button>
-    </div>
     <label class="chk"><input type="checkbox" id="datedChk" checked> Include funds with 6/30/2025 holdings (*)</label>
   </div>
 
   <div class="stats" id="kpis" aria-live="polite"></div>
-  <p class="eqb-caption natm" id="natMethod" hidden></p>
+  <div class="natm" id="natMethod" hidden></div>
   <p class="eqb-caption kfoot">* This is limited to pension funds that disclose their public equity holdings on a quarterly basis, plus annually reported holdings from other top 25 funds that do not report quarterly. North Carolina and UC Regents are listed as undisclosed and are not included.</p>
 
   <section class="card" id="totalCard">
     <div class="card-head">
       <h2 class="eqb-h5" id="totalTitle">Combined value of NVDA holdings</h2>
       <p id="totalSub"></p>
+      <div class="ctl rangeSeg" role="group" aria-label="Date range for the combined value and percent-below-peak charts">
+        <span class="ctl-label">Range</span>
+        <button type="button" class="tag eqb-tag--interactive" data-range="all" aria-pressed="true">YTD</button>
+        <button type="button" class="tag eqb-tag--interactive" data-range="90" aria-pressed="false">3M</button>
+        <button type="button" class="tag eqb-tag--interactive" data-range="30" aria-pressed="false">1M</button>
+      </div>
     </div>
     <div class="chart" id="totalChart"></div>
   </section>
@@ -174,6 +187,12 @@ footer .eqb-caption{margin:0}
     <div class="card-head">
       <h2 class="eqb-h5" id="fundTitle">Fund detail</h2>
       <p id="fundSub"></p>
+      <div class="ctl rangeSeg" role="group" aria-label="Date range for the fund chart">
+        <span class="ctl-label">Range</span>
+        <button type="button" class="tag eqb-tag--interactive" data-range="all" aria-pressed="true">YTD</button>
+        <button type="button" class="tag eqb-tag--interactive" data-range="90" aria-pressed="false">3M</button>
+        <button type="button" class="tag eqb-tag--interactive" data-range="30" aria-pressed="false">1M</button>
+      </div>
     </div>
     <div class="chart" id="fundChart"></div>
   </section>
@@ -376,7 +395,13 @@ function render(){
 
   const nm=$("#natMethod");
   if(nat){const sa=NA/K,sp=sample.last.v;
-    nm.innerHTML='<b>How the national estimate works.</b> The '+nInc+' funds* hold $'+(sa/1e12).toFixed(2)+' trillion in assets, '+pct(sa/NA,1).replace('+','')+' of the '+natT+' held by all U.S. state and local pension funds. Their NVDA holdings ('+money(sp)+') equal '+pct(sp/sa,2).replace('+','')+' of their assets. Applying that share to '+natT+' gives '+money(st.last.v)+'. The other figures are scaled by the same factor, and each is shown as a share of national pension assets.';
+    const step=(n,h,v,q)=>'<div class="nstep"><div class="nn">Step '+n+'</div><div class="nh">'+h+'</div><div class="nv">'+v+'</div><div class="nq">'+q+'</div></div>';
+    nm.innerHTML='<div class="eyebrow">How the national estimate is calculated</div><div class="nsteps">'+
+      step(1,'Sample share of national assets',pct(sa/NA,1).replace('+',''),'The '+nInc+' funds* hold $'+(sa/1e12).toFixed(2)+' trillion of the '+natT+' in U.S. state and local pension assets')+
+      step(2,'NVDA as a share of sample assets',pct(sp/sa,2).replace('+',''),'Their combined NVDA holdings of '+money(sp)+' divided by their $'+(sa/1e12).toFixed(2)+' trillion in assets')+
+      step(3,'Applied to national assets',money(st.last.v),pct(sp/sa,2).replace('+','')+' of '+natT+(intra?' (intraday price)':' at the '+fmtDate(st.last.t)+' close'))+
+      step(4,'Other figures scaled the same way',(K).toFixed(2)+'×','Each sample figure is multiplied by '+natT+' ÷ $'+(sa/1e12).toFixed(2)+' trillion; the boxes above show the results and their share of national assets')+
+      '</div>';
     nm.hidden=false;} else nm.hidden=true;
   $("#totalSub").textContent="Valued at each day's NVDA close using "+basisTxt+". Dashed line marks the period peak.";
   const vis=rangeFilter(full);
@@ -480,7 +505,7 @@ function renderFund(){
 
 function bindSeg(id,key){
   document.querySelectorAll(id+" button").forEach(b=>b.addEventListener("click",()=>{
-    state[key]=b.dataset[key];document.querySelectorAll(id+" button").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));render();}));
+    state[key]=b.dataset[key];document.querySelectorAll(id+" button").forEach(x=>x.setAttribute("aria-pressed",x.dataset[key]===b.dataset[key]?"true":"false"));render();}));
 }
 
 // Published-to-web CSVs of the Google Sheet "NVIDIA Tracking (live)". data.json is the fallback.
@@ -523,7 +548,7 @@ async function init(){
   const last=D.days[D.days.length-1];
   $("#meta").textContent="Prices through "+priceAsOf();
   const nb=document.querySelector('[data-basis="national"]');if(nb) nb.hidden=!natReady();document.getElementById("basisSeg").hidden=!natReady();
-  bindSeg("#basisSeg","basis");bindSeg("#rangeSeg","range");
+  bindSeg("#basisSeg","basis");bindSeg(".rangeSeg","range");
   $("#datedChk").addEventListener("change",e=>{state.dated=e.target.checked;render();});
   render();
   if(document.fonts&&document.fonts.ready) document.fonts.ready.then(render);
