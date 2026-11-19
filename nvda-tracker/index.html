@@ -352,9 +352,21 @@ function render(){
   });
   renderTable(st);
   renderFund();
-  renderLive(st);
+  $("#live").hidden=true;
 }
 
+function priceAsOf(){
+  const last=D.days[D.days.length-1];if(!last) return "n/a";
+  const day=fmtLong(last.t),L=D.raw.live;
+  const m=L&&L.trade_time?String(L.trade_time).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2})/):null;
+  if(!m||Date.UTC(+m[3],+m[1]-1,+m[2])!==last.t) return day+", 4:00 PM ET (close)";
+  const h=+m[4],mi=+m[5];
+  if(h*60+mi>=960) return day+", 4:00 PM ET (close)";
+  const p=num(L.price);
+  if(p!==null&&Math.abs(p-last.close)<0.005) return day+", "+((h%12)||12)+":"+String(mi).padStart(2,"0")+" "+(h<12?"AM":"PM")+" ET";
+  const nowH=+new Date().toLocaleString("en-US",{timeZone:"America/New_York",hour:"numeric",hour12:false});
+  return day+", about "+(nowH>=13?"1:00 PM":"10:00 AM")+" ET";
+}
 function isIntraday(){
   const L=D.raw.live;if(!L||!L.trade_time||!D.days.length) return false;
   const m=String(L.trade_time).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2})/);if(!m) return false;
@@ -445,7 +457,7 @@ function csvRows(t){
   return rows;
 }
 async function getCsv(gid){
-  const r=await fetch(SHEET_PUB+"?gid="+gid+"&single=true&output=csv&t="+Date.now(),{cache:"no-store"});
+  const r=await fetch(SHEET_PUB+"?gid="+gid+"&single=true&output=csv",{cache:"no-store"});
   if(!r.ok) throw new Error("HTTP "+r.status);
   const t=await r.text();if(/^\s*</.test(t)) throw new Error("not CSV");return csvRows(t);
 }
@@ -468,9 +480,7 @@ async function init(){
   for(const f of D.funds) state.include[f.short]=f.include;
   const top=D.funds.slice().sort((a,b)=>b.latest.shares-a.latest.shares)[0];state.sel=top?top.short:null;
   const last=D.days[D.days.length-1];
-  let upd="";if(D.raw.source==="sheet") upd=" · Read from the Google Sheet "+new Date().toLocaleString("en-US",{timeZone:"America/New_York",month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"})+" ET";
-  else if(D.raw.updated_at){const u=new Date(D.raw.updated_at);if(!isNaN(u)) upd=" · Updated "+u.toLocaleString("en-US",{timeZone:"America/New_York",month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"})+" ET";}
-  $("#meta").textContent="Prices through "+(last?fmtLong(last.t):"n/a")+(isIntraday()?" (intraday price, not yet the close)":" close")+upd;
+  $("#meta").textContent="Prices through "+priceAsOf();
   bindSeg("#basisSeg","basis");bindSeg("#rangeSeg","range");
   $("#datedChk").addEventListener("change",e=>{state.dated=e.target.checked;render();});
   render();
