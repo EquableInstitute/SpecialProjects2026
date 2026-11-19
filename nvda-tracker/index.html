@@ -24,6 +24,9 @@ h1.eqb-h2{margin:var(--space-4) 0 var(--space-4);max-width:22ch}
 .meta{margin-top:var(--space-4);font-weight:var(--weight-medium);font-size:var(--fs-badge-sm);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-muted)}
 .live{margin:var(--space-3) 0 0;max-width:80ch;font-size:var(--fs-paragraph-sm);line-height:var(--lh-body);color:var(--text-body);font-variant-numeric:tabular-nums}
 .live b{font-weight:var(--weight-medium);color:var(--text-strong)}
+.kfoot{margin:var(--space-4) 0 0;max-width:90ch;color:var(--text-muted)}
+.eqb-table tbody tr.undis{cursor:default}
+.eqb-table tbody tr.undis td{color:var(--text-muted)}
 
 /* Controls: notched-pill Tags */
 .controls{display:flex;flex-wrap:wrap;gap:var(--space-4) var(--space-8);align-items:center;margin-top:var(--space-10);padding-top:var(--space-6);border-top:1px solid var(--border-subtle)}
@@ -115,7 +118,7 @@ footer .eqb-caption{margin:0}
   <header>
     <div class="eyebrow"><span class="bar" aria-hidden="true"></span>Public pension investments</div>
     <h1 class="eqb-h2">NVIDIA holdings of large state and local pension funds</h1>
-    <p class="eqb-body-lg lede">Daily market value of the NVIDIA (NVDA) shares that 25 large U.S. public pension funds report holding, valued at each day's closing price.</p>
+    <p class="eqb-body-lg lede">Daily market value of NVIDIA (NVDA) shares that 25 large U.S. public pension funds report holding, valued at each day's closing price.</p>
     <div class="meta" id="meta">Loading data</div>
     <p class="live" id="live" hidden></p>
   </header>
@@ -124,7 +127,7 @@ footer .eqb-caption{margin:0}
     <div class="ctl" id="basisSeg" role="group" aria-label="Share basis">
       <span class="ctl-label">Share basis</span>
       <button type="button" class="tag eqb-tag--interactive" data-basis="disclosed" aria-pressed="true" title="Each day uses the shares from the most recent disclosure on or before that day">Shares as disclosed</button>
-      <button type="button" class="tag eqb-tag--interactive" data-basis="latest" aria-pressed="false" title="Every day uses each fund's most recent disclosed share count, so changes reflect price only">Price effect only</button>
+      <button type="button" class="tag eqb-tag--interactive" data-basis="national" aria-pressed="false" hidden title="Scales the sample's NVDA holdings, as a share of the sample funds' total assets, to all U.S. state and local pension assets">National estimate</button>
     </div>
     <div class="ctl" id="rangeSeg" role="group" aria-label="Date range">
       <span class="ctl-label">Range</span>
@@ -136,6 +139,7 @@ footer .eqb-caption{margin:0}
   </div>
 
   <div class="stats" id="kpis" aria-live="polite"></div>
+  <p class="eqb-caption kfoot">* This is limited to pension funds that disclose their public equity holdings on a quarterly basis, plus annually reported holdings from other top 25 funds that do not report quarterly. North Carolina and UC Regents are listed as undisclosed and are not included.</p>
 
   <section class="card" id="totalCard">
     <div class="card-head">
@@ -176,10 +180,11 @@ footer .eqb-caption{margin:0}
     <ul>
       <li><b>Prices.</b> NVDA closing prices, not adjusted for dividends, starting 1/2/2026. Closes come from Google Finance and StockAnalysis.com, cross-checked against a second source. On trading days, the current day's row holds the Google Finance price recorded at about 10 am and 1 pm ET (which may be delayed up to 20 minutes) and is replaced by the closing price after 4 pm.</li>
       <li><b>Holdings.</b> Shares come from each fund's own disclosures: SEC Form 13F filings for most funds, and published holdings listings, holdings reports, or annual comprehensive financial reports (ACFRs) for the rest. Each disclosure's share count applies from its as-of date until the next disclosure.</li>
-      <li><b>Shares as disclosed vs. price effect only.</b> "Shares as disclosed" changes when a new disclosure takes effect as well as when the price moves. "Price effect only" holds each fund's latest disclosed share count fixed for the whole period, so every change comes from the price.</li>
+      <li><b>National estimate.</b> Takes the sample funds' combined NVDA value as a share of their combined total assets and applies that share to the $6.4 trillion held by all U.S. state and local pension funds. All four figures are scaled by the same factor. This assumes funds outside the sample hold NVDA in the same proportion to assets as the sample funds.</li>
+      <li><b>Change since 11/6/2026.</b> 11/6/2026 is the last close before NVIDIA's board of directors announced, on 11/8/2026, an investigation involving CEO Jensen Huang.</li>
       <li><b>Holdings are a floor.</b> 13F filings cover directly held and internally managed positions. Shares held through commingled funds or some external managers may not appear. Trades inside a quarter are not visible.</li>
       <li><b>* Dated holdings.</b> New York City (five funds combined), Georgia TRS, Massachusetts PRIM, Illinois TRS, and the WSIB Holdings Report last reported holdings as of 6/30/2025. Their share counts are held constant through the whole period. For MA PRIM, Illinois TRS and the WSIB Holdings Report, shares are derived from reported dollar values divided by the 6/30/2025 NVDA close ($157.99).</li>
-      <li><b>Coverage.</b> North Carolina is not included. UC Regents and the WSIB 13F list no NVDA position.</li>
+      <li><b>Coverage.</b> The list covers the 25 largest U.S. public pension funds. North Carolina and UC Regents are shown as undisclosed and are not included in the totals. WSIB is represented by its holdings report; its 13F, which lists no NVDA position, is not shown.</li>
     </ul>
   </section>
 
@@ -214,6 +219,14 @@ function dt(v){
   if((m=s.match(/^(\d{4})-(\d{2})-(\d{2})/))) return Date.UTC(+m[1],+m[2]-1,+m[3]);
   return null;
 }
+// Display rules: WSIB's 13F (no NVDA position) is not shown because WSIB is covered by its holdings report;
+// UC Regents and North Carolina are listed as undisclosed and left out of totals.
+const EXCLUDE=["WSIB (13F)"],UNDISCLOSED=["UC Regents"];
+const EXTRA_UNDISCLOSED=[{name:"North Carolina Retirement Systems",short:"North Carolina"}];
+const CUTOFF_T=Date.UTC(2026,10,6); // 11/6/2026 close, last close before the 11/8/2026 board announcement
+// National estimate inputs. Fill in total assets (USD) for each sample fund, keyed by short name; the toggle stays hidden until every included fund has a value.
+const NATIONAL_ASSETS=6.4e12;
+const FUND_ASSETS={};
 function parse(raw){
   const days=[];
   for(const r of raw.daily||[]){const t=dt(r[0]),c=num(r[1]); if(t!==null&&c!==null) days.push({t,close:c});}
@@ -226,17 +239,23 @@ function parse(raw){
     if(!slots.length) continue;
     slots.sort((a,b)=>a.t-b.t);
     const name=String(r[0]||"").trim(), short=String(r[1]||name).trim();
-    funds.push({name,short,source:String(r[2]||""),include:num(r[3])!==0,dated:/\*/.test(short)||/\*/.test(name),slots,latest:slots[slots.length-1]});
+    if(EXCLUDE.includes(short)) continue;
+    const undis=UNDISCLOSED.includes(short);
+    funds.push({name,short,source:undis?"Not disclosed":String(r[2]||""),include:!undis&&num(r[3])!==0,undisclosed:undis,dated:/\*/.test(short)||/\*/.test(name),slots,latest:slots[slots.length-1]});
   }
+  for(const x of EXTRA_UNDISCLOSED) funds.push(Object.assign({source:"Not disclosed",include:false,undisclosed:true,dated:false,slots:[{t:0,shares:0}],latest:{t:0,shares:0}},x));
   return {days,funds,raw};
 }
 
 // ---------- calc ----------
 function sharesAt(f,t){let s=0;for(const sl of f.slots){if(sl.t<=t) s=sl.shares;}return s;}
-function fundShares(f,t){return state.basis==="latest"?f.latest.shares:sharesAt(f,t);}
-function active(f){return state.include[f.short]&&(state.dated||!f.dated);}
+function fundShares(f,t){return sharesAt(f,t);}
+// National estimate: k = national public pension assets / total assets of the included sample funds.
+function natK(){const fs=D.funds.filter(active);let a=0;for(const f of fs){const x=FUND_ASSETS[f.short];if(!(x>0)) return null;a+=x;}return a>0&&NATIONAL_ASSETS>0?NATIONAL_ASSETS/a:null;}
+function natReady(){return natK()!==null;}
+function active(f){return !f.undisclosed&&state.include[f.short]&&(state.dated||!f.dated);}
 function fundSeries(f){return D.days.map(d=>({t:d.t,close:d.close,v:d.close*fundShares(f,d.t)}));}
-function totalSeries(){const fs=D.funds.filter(active);return D.days.map(d=>{let v=0;for(const f of fs) v+=d.close*fundShares(f,d.t);return {t:d.t,close:d.close,v};});}
+function totalSeries(scale){const fs=D.funds.filter(active),k=scale===undefined?1:scale;return D.days.map(d=>{let v=0;for(const f of fs) v+=d.close*fundShares(f,d.t);return {t:d.t,close:d.close,v:v*k};});}
 function withPeak(s){let p=-Infinity,pt=null;return s.map(x=>{if(x.v>p){p=x.v;pt=x.t;}return Object.assign({},x,{peak:p,peakT:pt,dd:p>0?x.v/p-1:0});});}
 function stats(s){if(!s.length) return null;const last=s[s.length-1],prev=s.length>1?s[s.length-2]:null,first=s[0];let pk=s[0];for(const p of s){if(p.v>pk.v) pk=p;}return {last,prev,first,pk};}
 
@@ -325,18 +344,21 @@ function rangeFilter(s){if(state.range==="all"||!s.length) return s;const cut=s[
 const tipRow=(a,b)=>'<div class="r"><span>'+a+'</span><span>'+b+'</span></div>';
 
 function render(){
-  const full=withPeak(totalSeries()),st=stats(full);
+  if(state.basis==="national"&&!natReady()) state.basis="disclosed";
+  const nat=state.basis==="national",K=nat?natK():1;
+  const full=withPeak(totalSeries(K)),st=stats(full);
+  const sample=nat?stats(withPeak(totalSeries(1))):st;
   if(!st){$("#kpis").innerHTML='<div class="err">No closing prices found in the data.</div>';return;}
   const nInc=D.funds.filter(active).length;
-  const basisTxt=state.basis==="latest"?"each fund's latest disclosed shares held constant (price effect only)":"shares as of each fund's most recent disclosure on or before each date";
+  const basisTxt=nat?"an estimate for all U.S. state and local pension funds, scaled from the sample funds' holdings as a share of their total assets":"shares as of each fund's most recent disclosure on or before each date";
   const dchg=st.prev?st.last.v-st.prev.v:null,dchgP=st.prev&&st.prev.v?st.last.v/st.prev.v-1:null,cchg=st.prev?st.last.close/st.prev.close-1:null;
   const ytd=st.last.v-st.first.v,ytdP=st.first.v?st.last.v/st.first.v-1:null;
   const vsPk=st.last.v-st.pk.v,vsPkP=st.pk.v?st.last.v/st.pk.v-1:null;
-  const intra=isIntraday();
+  const intra=isIntraday(),cut=full.find(p=>p.t===CUTOFF_T);
   $("#kpis").innerHTML=[
-    ['Combined value',money(st.last.v),'As of the '+fmtDate(st.last.t)+(intra?' intraday price (not yet the close)':' close')+' · '+nInc+' funds · '+(state.basis==="latest"?'price effect only':'shares as disclosed')],
+    [nat?'National estimate':'Combined value',money(st.last.v),'As of the '+fmtDate(st.last.t)+(intra?' intraday price (not yet the close)':' close')+' · '+(nat?'all U.S. state and local pension funds ('+'$'+(NATIONAL_ASSETS/1e12).toFixed(1)+' trillion'+' in assets), scaled from '+nInc+' funds*':nInc+' funds* · shares as disclosed')],
     ['Change from prior close',dchg===null?'n/a':signedMoney(dchg),dchgP===null?'':pct(dchgP,2)+' · NVDA '+(intra?'intraday price $':'closed at $')+st.last.close.toFixed(2)+' ('+pct(cchg,2)+')'],
-    ['Change since '+fmtDate(st.first.t),signedMoney(ytd),pct(ytdP)+' from '+money(st.first.v)],
+    cut?['Change since '+fmtDate(cut.t),signedMoney(st.last.v-cut.v),pct(cut.v?st.last.v/cut.v-1:null)+' from '+money(cut.v)+' at the '+fmtDate(cut.t)+' close, the last close before NVIDIA\'s board announced an investigation involving CEO Jensen Huang (11/8/2026)']:['Change since '+fmtDate(st.first.t),signedMoney(ytd),pct(ytdP)+' from '+money(st.first.v)],
     ['Change from peak',signedMoney(vsPk),pct(vsPkP)+' from the '+money(st.pk.v)+' peak on '+fmtDate(st.pk.t)]
   ].map(k=>'<div class="stat"><div class="k">'+k[0]+'</div><div class="v">'+k[1]+'</div><div class="q">'+k[2]+'</div></div>').join("");
 
@@ -350,7 +372,7 @@ function render(){
     label:"Percent below prior peak over time",yfmt:v=>Math.round(v*100)+"%",yw:46,zeroTop:true,height:$("#ddChart").clientWidth<560?180:220,
     tip:p=>'<div class="d">'+fmtLong(p.t)+'</div>'+tipRow("Below prior peak",pct(p.dd))+tipRow("Prior peak",money(p.peak)+" ("+fmtDate(p.peakT)+")")
   });
-  renderTable(st);
+  renderTable(sample);
   renderFund();
   $("#live").hidden=true;
 }
@@ -380,14 +402,14 @@ function renderLive(st){
   const pc=num(L.prior_close),chg=pc?p/pc-1:null;
   el.innerHTML='<b>Latest NVDA price: $'+p.toFixed(2)+'</b>'+(chg!==null?' ('+pct(chg,2)+' from the prior close of $'+pc.toFixed(2)+')':'')+
     ' · Last trade '+esc(L.trade_time||'n/a')+' ET, from Google Finance; may be delayed up to 20 minutes.'+
-    ' Combined value at this price: <b>'+money(sh*p)+'</b> ('+(state.basis==="latest"?'price effect only':'shares as disclosed')+'). During trading hours, today\'s row in the charts, cards and table uses the price recorded at the most recent scheduled update (about 10 am and 1 pm ET); it is replaced by the closing price after the close.';
+    ' Combined value at this price: <b>'+money(sh*p)+'</b> (shares as disclosed). During trading hours, today\'s row in the charts, cards and table uses the price recorded at the most recent scheduled update (about 10 am and 1 pm ET); it is replaced by the closing price after the close.';
   el.hidden=false;
 }
 
 function fundRow(f){
   const s=withPeak(fundSeries(f)),st=stats(s),prev=st.prev?st.prev.v:null;
   return {f,first:st.first.v,peak:st.pk.v,latest:st.last.v,d1:prev===null?null:st.last.v-prev,vsPk:st.pk.v>0?st.last.v/st.pk.v-1:null,
-    shares:fundShares(f,st.last.t),asof:state.basis==="latest"?f.latest.t:(f.slots.filter(x=>x.t<=st.last.t).pop()||f.slots[0]).t};
+    shares:fundShares(f,st.last.t),asof:(f.slots.filter(x=>x.t<=st.last.t).pop()||f.slots[0]).t};
 }
 const COLS=[
   {k:"inc",h:'<span class="sr">Include</span>',cls:"cb"},
@@ -396,9 +418,9 @@ const COLS=[
   {k:"peak",h:"Peak value",num:1},{k:"latest",h:"Latest value",num:1},{k:"d1",h:"1-day change",num:1},{k:"vsPk",h:"Vs. peak",num:1}
 ];
 function renderTable(tot){
-  const rows=D.funds.map(fundRow),key=state.sortKey,dir=state.sortDir;
+  const rows=D.funds.map(f=>f.undisclosed?{f,first:null,peak:null,latest:null,d1:null,vsPk:null,shares:null,asof:null}:fundRow(f)),key=state.sortKey,dir=state.sortDir;
   const val=(r,k)=>k==="name"?r.f.short.toLowerCase():k==="src"?r.f.source:r[k];
-  rows.sort((a,b)=>{const va=val(a,key),vb=val(b,key);if(va===vb) return 0;if(va==null) return 1;if(vb==null) return -1;return (va>vb?1:-1)*dir;});
+  rows.sort((a,b)=>{if(a.f.undisclosed!==b.f.undisclosed) return a.f.undisclosed?1:-1;const va=val(a,key),vb=val(b,key);if(va===vb) return 0;if(va==null) return 1;if(vb==null) return -1;return (va>vb?1:-1)*dir;});
   $("#fundTable thead").innerHTML="<tr>"+COLS.map(c=>{
     const cls=[c.num?"is-num":"",c.cls||""].join(" ").trim();
     if(c.k==="inc") return '<th scope="col" class="'+cls+'" aria-label="Include in totals"></th>';
@@ -406,6 +428,9 @@ function renderTable(tot){
   }).join("")+"</tr>";
   const tb=$("#fundTable tbody");tb.innerHTML="";
   for(const r of rows){
+    if(r.f.undisclosed){const tr=document.createElement("tr");tr.className="undis";
+      tr.innerHTML='<td class="cb"></td><td class="fund" title="'+esc(r.f.name)+'">'+esc(r.f.short)+'<span class="src">'+esc(r.f.source)+'</span></td><td class="is-num">Undisclosed</td>'+'<td class="is-num">–</td>'.repeat(6);
+      tb.appendChild(tr);continue;}
     const on=active(r.f),tr=document.createElement("tr");tr.tabIndex=0;
     if(!on) tr.classList.add("off"); if(state.sel===r.f.short) tr.classList.add("sel");
     const disabled=r.f.dated&&!state.dated;
@@ -481,6 +506,7 @@ async function init(){
   const top=D.funds.slice().sort((a,b)=>b.latest.shares-a.latest.shares)[0];state.sel=top?top.short:null;
   const last=D.days[D.days.length-1];
   $("#meta").textContent="Prices through "+priceAsOf();
+  const nb=document.querySelector('[data-basis="national"]');if(nb) nb.hidden=!natReady();document.getElementById("basisSeg").hidden=!natReady();
   bindSeg("#basisSeg","basis");bindSeg("#rangeSeg","range");
   $("#datedChk").addEventListener("change",e=>{state.dated=e.target.checked;render();});
   render();
