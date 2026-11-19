@@ -24,6 +24,8 @@ h1.eqb-h2{margin:var(--space-4) 0 var(--space-4);max-width:22ch}
 .meta{margin-top:var(--space-4);font-weight:var(--weight-medium);font-size:var(--fs-badge-sm);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-muted)}
 .live{margin:var(--space-3) 0 0;max-width:80ch;font-size:var(--fs-paragraph-sm);line-height:var(--lh-body);color:var(--text-body);font-variant-numeric:tabular-nums}
 .live b{font-weight:var(--weight-medium);color:var(--text-strong)}
+.natm{margin:var(--space-6) 0 0;max-width:90ch;color:var(--text-body)}
+.natm b{font-weight:var(--weight-medium);color:var(--text-strong)}
 .kfoot{margin:var(--space-4) 0 0;max-width:90ch;color:var(--text-muted)}
 .eqb-table tbody tr.undis{cursor:default}
 .eqb-table tbody tr.undis td{color:var(--text-muted)}
@@ -139,6 +141,7 @@ footer .eqb-caption{margin:0}
   </div>
 
   <div class="stats" id="kpis" aria-live="polite"></div>
+  <p class="eqb-caption natm" id="natMethod" hidden></p>
   <p class="eqb-caption kfoot">* This is limited to pension funds that disclose their public equity holdings on a quarterly basis, plus annually reported holdings from other top 25 funds that do not report quarterly. North Carolina and UC Regents are listed as undisclosed and are not included.</p>
 
   <section class="card" id="totalCard">
@@ -357,13 +360,24 @@ function render(){
   const ytd=st.last.v-st.first.v,ytdP=st.first.v?st.last.v/st.first.v-1:null;
   const vsPk=st.last.v-st.pk.v,vsPkP=st.pk.v?st.last.v/st.pk.v-1:null;
   const intra=isIntraday(),cut=full.find(p=>p.t===CUTOFF_T);
-  $("#kpis").innerHTML=[
+  const NA=NATIONAL_ASSETS,shr=v=>pct(v/NA,2)+" of national pension assets",natT="$"+(NA/1e12).toFixed(2)+" trillion";
+  const boxes=nat?[
+    ['National estimate',money(st.last.v),pct(st.last.v/NA,2).replace('+','')+' of the '+natT+' in U.S. state and local pension assets · as of the '+fmtDate(st.last.t)+(intra?' intraday price':' close')],
+    ['Change from prior close',dchg===null?'n/a':signedMoney(dchg),dchg===null?'':shr(dchg)+' · NVDA '+(intra?'intraday price $':'closed at $')+st.last.close.toFixed(2)+' ('+pct(cchg,2)+')'],
+    cut?['Change since '+fmtDate(cut.t),signedMoney(st.last.v-cut.v),shr(st.last.v-cut.v)+' · since the '+fmtDate(cut.t)+' close, the last close before NVIDIA\'s board announced an investigation involving CEO Jensen Huang (11/8/2026)']:['Change since '+fmtDate(st.first.t),signedMoney(ytd),shr(ytd)],
+    ['Change from peak',signedMoney(vsPk),shr(vsPk)+' · from the '+money(st.pk.v)+' peak on '+fmtDate(st.pk.t)]
+  ]:[
     [nat?'National estimate':'Combined value',money(st.last.v),'As of the '+fmtDate(st.last.t)+(intra?' intraday price (not yet the close)':' close')+' · '+(nat?'all U.S. state and local pension funds ('+'$'+(NATIONAL_ASSETS/1e12).toFixed(2)+' trillion'+' in assets), scaled from '+nInc+' funds*':nInc+' funds* · shares as disclosed')],
     ['Change from prior close',dchg===null?'n/a':signedMoney(dchg),dchgP===null?'':pct(dchgP,2)+' · NVDA '+(intra?'intraday price $':'closed at $')+st.last.close.toFixed(2)+' ('+pct(cchg,2)+')'],
     cut?['Change since '+fmtDate(cut.t),signedMoney(st.last.v-cut.v),pct(cut.v?st.last.v/cut.v-1:null)+' from '+money(cut.v)+' at the '+fmtDate(cut.t)+' close, the last close before NVIDIA\'s board announced an investigation involving CEO Jensen Huang (11/8/2026)']:['Change since '+fmtDate(st.first.t),signedMoney(ytd),pct(ytdP)+' from '+money(st.first.v)],
     ['Change from peak',signedMoney(vsPk),pct(vsPkP)+' from the '+money(st.pk.v)+' peak on '+fmtDate(st.pk.t)]
-  ].map(k=>'<div class="stat"><div class="k">'+k[0]+'</div><div class="v">'+k[1]+'</div><div class="q">'+k[2]+'</div></div>').join("");
+  ];
+  $("#kpis").innerHTML=boxes.map(k=>'<div class="stat"><div class="k">'+k[0]+'</div><div class="v">'+k[1]+'</div><div class="q">'+k[2]+'</div></div>').join("");
 
+  const nm=$("#natMethod");
+  if(nat){const sa=NA/K,sp=sample.last.v;
+    nm.innerHTML='<b>How the national estimate works.</b> The '+nInc+' funds* hold $'+(sa/1e12).toFixed(2)+' trillion in assets, '+pct(sa/NA,1).replace('+','')+' of the '+natT+' held by all U.S. state and local pension funds. Their NVDA holdings ('+money(sp)+') equal '+pct(sp/sa,2).replace('+','')+' of their assets. Applying that share to '+natT+' gives '+money(st.last.v)+'. The other figures are scaled by the same factor, and each is shown as a share of national pension assets.';
+    nm.hidden=false;} else nm.hidden=true;
   $("#totalSub").textContent="Valued at each day's NVDA close using "+basisTxt+". Dashed line marks the period peak.";
   const vis=rangeFilter(full);
   lineChart($("#totalChart"),vis.map(p=>Object.assign({y:p.v},p)),{
