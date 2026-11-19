@@ -180,7 +180,7 @@ footer .eqb-caption{margin:0}
     <ul>
       <li><b>Prices.</b> NVDA closing prices, not adjusted for dividends, starting 1/2/2026. Closes come from Google Finance and StockAnalysis.com, cross-checked against a second source. On trading days, the current day's row holds the Google Finance price recorded at about 10 am and 1 pm ET (which may be delayed up to 20 minutes) and is replaced by the closing price after 4 pm.</li>
       <li><b>Holdings.</b> Shares come from each fund's own disclosures: SEC Form 13F filings for most funds, and published holdings listings, holdings reports, or annual comprehensive financial reports (ACFRs) for the rest. Each disclosure's share count applies from its as-of date until the next disclosure.</li>
-      <li><b>National estimate.</b> Takes the sample funds' combined NVDA value as a share of their combined total assets and applies that share to the $6.4 trillion held by all U.S. state and local pension funds. All four figures are scaled by the same factor. This assumes funds outside the sample hold NVDA in the same proportion to assets as the sample funds.</li>
+      <li><b>National estimate.</b> Takes the sample funds' combined NVDA value as a share of their combined total assets and applies that share to the $6.48 trillion held by all U.S. state and local pension funds (Equable State of Pensions, October 2026, 2026 estimate). Fund assets are Equable's estimated assets as of 6/30/2026 from the Pension AI Exposure workbook (10/23/2026); the 23 funds in the totals hold $4.09 trillion, or 63% of the national total. All four figures are scaled by the same factor. This assumes funds outside the sample hold NVDA in the same proportion to their assets as the sample funds.</li>
       <li><b>Change since 11/6/2026.</b> 11/6/2026 is the last close before NVIDIA's board of directors announced, on 11/8/2026, an investigation involving CEO Jensen Huang.</li>
       <li><b>Holdings are a floor.</b> 13F filings cover directly held and internally managed positions. Shares held through commingled funds or some external managers may not appear. Trades inside a quarter are not visible.</li>
       <li><b>* Dated holdings.</b> New York City (five funds combined), Georgia TRS, Massachusetts PRIM, Illinois TRS, and the WSIB Holdings Report last reported holdings as of 6/30/2025. Their share counts are held constant through the whole period. For MA PRIM, Illinois TRS and the WSIB Holdings Report, shares are derived from reported dollar values divided by the 6/30/2025 NVDA close ($157.99).</li>
@@ -225,8 +225,10 @@ const EXCLUDE=["WSIB (13F)"],UNDISCLOSED=["UC Regents"];
 const EXTRA_UNDISCLOSED=[{name:"North Carolina Retirement Systems",short:"North Carolina"}];
 const CUTOFF_T=Date.UTC(2026,10,6); // 11/6/2026 close, last close before the 11/8/2026 board announcement
 // National estimate inputs. Fill in total assets (USD) for each sample fund, keyed by short name; the toggle stays hidden until every included fund has a value.
-const NATIONAL_ASSETS=6.4e12;
-const FUND_ASSETS={};
+// Sources: national = 2026 total assets of all state and local plans, Equable State of Pensions (October 2026), Pg 11 data;
+// funds = 'Estimated Assets as of 6/30/2026', Equable Pension AI Exposure workbook (10/23/2026), Pension Investment Funds tab.
+const NATIONAL_ASSETS=6481286715328;
+const FUND_ASSETS={"CalPERS":623732476012,"CalSTRS":420071342080,"NY State Common":297336565760,"NYC Combined*":286925175808,"Texas TRS":260642029568,"Florida SBA":237287391232,"WSIB (Holdings Rpt)*":179424632576,"NYSTRS":162849226752,"Wisconsin SWIB":149272330240,"NJ Common Fund D":125085122816,"Virginia RS":125954732352,"Georgia TRS*":154672562176,"MA PRIM*":103884149248,"Ohio PERS":118651969536,"Minnesota SBI":106563925888,"Ohio STRS":105123405824,"Michigan SRS":115656963264,"Oregon PERF":91966963712,"LACERA":93623902208,"Pennsylvania PSERS":91638759424,"Illinois TRS*":88171790336,"Maryland SRPS":72157650944,"Colorado PERA":76026253184};
 function parse(raw){
   const days=[];
   for(const r of raw.daily||[]){const t=dt(r[0]),c=num(r[1]); if(t!==null&&c!==null) days.push({t,close:c});}
@@ -356,7 +358,7 @@ function render(){
   const vsPk=st.last.v-st.pk.v,vsPkP=st.pk.v?st.last.v/st.pk.v-1:null;
   const intra=isIntraday(),cut=full.find(p=>p.t===CUTOFF_T);
   $("#kpis").innerHTML=[
-    [nat?'National estimate':'Combined value',money(st.last.v),'As of the '+fmtDate(st.last.t)+(intra?' intraday price (not yet the close)':' close')+' · '+(nat?'all U.S. state and local pension funds ('+'$'+(NATIONAL_ASSETS/1e12).toFixed(1)+' trillion'+' in assets), scaled from '+nInc+' funds*':nInc+' funds* · shares as disclosed')],
+    [nat?'National estimate':'Combined value',money(st.last.v),'As of the '+fmtDate(st.last.t)+(intra?' intraday price (not yet the close)':' close')+' · '+(nat?'all U.S. state and local pension funds ('+'$'+(NATIONAL_ASSETS/1e12).toFixed(2)+' trillion'+' in assets), scaled from '+nInc+' funds*':nInc+' funds* · shares as disclosed')],
     ['Change from prior close',dchg===null?'n/a':signedMoney(dchg),dchgP===null?'':pct(dchgP,2)+' · NVDA '+(intra?'intraday price $':'closed at $')+st.last.close.toFixed(2)+' ('+pct(cchg,2)+')'],
     cut?['Change since '+fmtDate(cut.t),signedMoney(st.last.v-cut.v),pct(cut.v?st.last.v/cut.v-1:null)+' from '+money(cut.v)+' at the '+fmtDate(cut.t)+' close, the last close before NVIDIA\'s board announced an investigation involving CEO Jensen Huang (11/8/2026)']:['Change since '+fmtDate(st.first.t),signedMoney(ytd),pct(ytdP)+' from '+money(st.first.v)],
     ['Change from peak',signedMoney(vsPk),pct(vsPkP)+' from the '+money(st.pk.v)+' peak on '+fmtDate(st.pk.t)]
