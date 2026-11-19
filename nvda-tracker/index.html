@@ -29,14 +29,30 @@ h1.eqb-h2{margin:var(--space-4) 0 var(--space-4);max-width:none}
 .live{margin:var(--space-3) 0 0;max-width:80ch;font-size:var(--fs-paragraph-sm);line-height:var(--lh-body);color:var(--text-body);font-variant-numeric:tabular-nums}
 .live b{font-weight:var(--weight-medium);color:var(--text-strong)}
 .natm{margin:var(--space-8) 0 0;padding:var(--space-6);background:var(--surface-card);color:var(--text-body)}
-.nsteps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-5);margin-top:var(--space-4)}
-.nstep{border-top:3px solid var(--teal-700);padding-top:var(--space-3)}
-.nstep .nn{font-weight:var(--weight-medium);font-size:var(--fs-badge-sm);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-link)}
-.nstep .nh{font-weight:var(--weight-medium);color:var(--text-strong);margin-top:var(--space-1)}
-.nstep .nv{font-family:var(--font-sans);font-weight:var(--weight-heavy);font-size:34px;line-height:1.1;color:var(--text-strong);margin-top:var(--space-2);font-variant-numeric:tabular-nums}
-.nstep .nq{font-size:var(--fs-paragraph-sm);line-height:var(--lh-body);color:var(--text-muted);margin-top:var(--space-2)}
-@media (max-width:900px){.nsteps{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:520px){.nsteps{grid-template-columns:1fr}}
+.ng-title{font-family:var(--font-serif);font-weight:var(--weight-regular);font-size:var(--fs-h5);line-height:var(--lh-h5);color:var(--text-serif);margin:var(--space-2) 0 var(--space-6)}
+.ng{display:grid;grid-template-columns:minmax(0,1fr) 28px minmax(0,1fr) 28px minmax(0,1fr);gap:var(--space-3);align-items:stretch}
+.ng-card{background:var(--surface-page);padding:var(--space-5);display:flex;flex-direction:column}
+.ng-n{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:var(--notch-up);background:var(--teal-700);color:var(--white);font-weight:var(--weight-medium);font-size:14px;margin-bottom:var(--space-3)}
+.ng-h{font-weight:var(--weight-medium);font-size:var(--fs-paragraph);line-height:var(--lh-paragraph);color:var(--text-strong)}
+.ng-big{font-weight:var(--weight-heavy);font-size:40px;line-height:1.05;color:var(--text-strong);margin:var(--space-3) 0;font-variant-numeric:tabular-nums}
+.ng-cap{font-size:var(--fs-paragraph-sm);line-height:var(--lh-body);color:var(--text-muted);margin-top:auto;padding-top:var(--space-4)}
+.ng-arrow{display:flex;align-items:center;justify-content:center;color:var(--teal-700);font-size:26px;font-weight:var(--weight-medium)}
+.ng-bar{display:flex;gap:2px;height:34px;margin-top:var(--space-2)}
+.ng-bar>span{display:block;height:100%;min-width:4px}
+.ng-bar>span:first-child{border-radius:4px 0 0 4px}.ng-bar>span:last-child{border-radius:0 4px 4px 0}
+.seg-track{background:var(--teal-700)}
+.seg-other{background:var(--gray-200)}
+.seg-nv{background:var(--yellow-500)}
+.seg-est{background:repeating-linear-gradient(45deg,var(--yellow-500) 0 5px,#FDE59A 5px 10px)}
+.ng-key{display:flex;flex-direction:column;gap:var(--space-1);margin-top:var(--space-3);font-size:14px;line-height:1.3;color:var(--text-body)}
+.ng-key i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:var(--space-2);vertical-align:-1px}
+.ng-key b{font-weight:var(--weight-medium);font-variant-numeric:tabular-nums}
+.ng-waffle{display:grid;grid-template-columns:repeat(10,1fr);gap:2px;width:100%;max-width:170px;margin-top:var(--space-2)}
+.ng-waffle span{aspect-ratio:1;background:var(--gray-200);border-radius:2px;position:relative;overflow:hidden}
+.ng-waffle span.on{background:var(--yellow-500)}
+.ng-waffle span.part::after{content:"";position:absolute;inset:0 auto 0 0;width:var(--p);background:var(--yellow-500)}
+.ng-foot{margin-top:var(--space-5);font-size:var(--fs-paragraph-sm);line-height:var(--lh-body);color:var(--text-body)}
+@media (max-width:900px){.ng{grid-template-columns:1fr}.ng-arrow{transform:rotate(90deg);height:24px}}
 .kfoot{margin:var(--space-4) 0 0;max-width:90ch;color:var(--text-muted)}
 .eqb-table tbody tr.undis{cursor:default}
 .eqb-table tbody tr.undis td{color:var(--text-muted)}
@@ -381,7 +397,7 @@ function render(){
   const intra=isIntraday(),cut=full.find(p=>p.t===CUTOFF_T);
   const NA=NATIONAL_ASSETS,shr=v=>pct(v/NA,2)+" of national pension assets",natT="$"+(NA/1e12).toFixed(2)+" trillion";
   const boxes=nat?[
-    ['National estimate',money(st.last.v),pct(st.last.v/NA,2).replace('+','')+' of the '+natT+' in U.S. state and local pension assets · as of the '+fmtDate(st.last.t)+(intra?' intraday price':' close')],
+    ['Estimate: all U.S. state and local pensions',money(st.last.v),pct(st.last.v/NA,2).replace('+','')+' of the '+natT+' in U.S. state and local pension assets · as of the '+fmtDate(st.last.t)+(intra?' intraday price':' close')],
     ['Change from prior close',dchg===null?'n/a':signedMoney(dchg),dchg===null?'':shr(dchg)+' · NVDA '+(intra?'intraday price $':'closed at $')+st.last.close.toFixed(2)+' ('+pct(cchg,2)+')'],
     cut?['Change since '+fmtDate(cut.t),signedMoney(st.last.v-cut.v),shr(st.last.v-cut.v)+' · since the '+fmtDate(cut.t)+' close, the last close before NVIDIA\'s board announced an investigation involving CEO Jensen Huang (11/8/2026)']:['Change since '+fmtDate(st.first.t),signedMoney(ytd),shr(ytd)],
     ['Change from peak',signedMoney(vsPk),shr(vsPk)+' · from the '+money(st.pk.v)+' peak on '+fmtDate(st.pk.t)]
@@ -395,13 +411,25 @@ function render(){
 
   const nm=$("#natMethod");
   if(nat){const sa=NA/K,sp=sample.last.v;
-    const step=(n,h,v,q)=>'<div class="nstep"><div class="nn">Step '+n+'</div><div class="nh">'+h+'</div><div class="nv">'+v+'</div><div class="nq">'+q+'</div></div>';
-    nm.innerHTML='<div class="eyebrow">How the national estimate is calculated</div><div class="nsteps">'+
-      step(1,'Sample share of national assets',pct(sa/NA,1).replace('+',''),'The '+nInc+' funds* hold $'+(sa/1e12).toFixed(2)+' trillion of the '+natT+' in U.S. state and local pension assets')+
-      step(2,'NVDA as a share of sample assets',pct(sp/sa,2).replace('+',''),'Their combined NVDA holdings of '+money(sp)+' divided by their $'+(sa/1e12).toFixed(2)+' trillion in assets')+
-      step(3,'Applied to national assets',money(st.last.v),pct(sp/sa,2).replace('+','')+' of '+natT+(intra?' (intraday price)':' at the '+fmtDate(st.last.t)+' close'))+
-      step(4,'Other figures scaled the same way',(K).toFixed(2)+'×','Each sample figure is multiplied by '+natT+' ÷ $'+(sa/1e12).toFixed(2)+' trillion; the boxes above show the results and their share of national assets')+
-      '</div>';
+    const ot=NA-sa,est=st.last.v-sp,rate=sp/sa,T=x=>'$'+(x/1e12).toFixed(2)+' trillion',P=(x,d)=>pct(x,d).replace('+','');
+    const full=Math.floor(rate*100),part=rate*100-full;
+    let waf='';for(let q=0;q<100;q++) waf+=q<full?'<span class="on"></span>':(q===full&&part>0?'<span class="part" style="--p:'+(part*100).toFixed(0)+'%"></span>':'<span></span>');
+    nm.innerHTML='<div class="eyebrow">National estimate</div><h3 class="ng-title">How we estimate NVIDIA holdings for all U.S. state and local pension funds</h3><div class="ng">'+
+      '<div class="ng-card"><span class="ng-n">1</span><div class="ng-h">The tracked funds hold most pension assets</div><div class="ng-big">'+P(sa/NA,0)+'</div>'+
+        '<div class="ng-bar" role="img" aria-label="'+T(sa)+' in the '+nInc+' tracked funds and '+T(ot)+' in all other funds"><span class="seg-track" style="flex:'+sa+'" title="'+nInc+' tracked funds: '+T(sa)+'"></span><span class="seg-other" style="flex:'+ot+'" title="All other funds: '+T(ot)+'"></span></div>'+
+        '<div class="ng-key"><span><i class="seg-track"></i>'+nInc+' funds in this tracker: <b>'+T(sa)+'</b></span><span><i class="seg-other"></i>All other state and local funds: <b>'+T(ot)+'</b></span></div>'+
+        '<div class="ng-cap">'+P(sa/NA,0)+' of the '+T(NA)+' held by all U.S. state and local pension funds is in the '+nInc+' funds in this tracker.</div></div>'+
+      '<div class="ng-arrow" aria-hidden="true">→</div>'+
+      '<div class="ng-card"><span class="ng-n">2</span><div class="ng-h">NVIDIA is a small slice of their assets</div><div class="ng-big">'+P(rate,2)+'</div>'+
+        '<div class="ng-waffle" role="img" aria-label="'+P(rate,2)+' of 100 squares filled">'+waf+'</div>'+
+        '<div class="ng-key"><span><i class="seg-nv"></i>NVIDIA stock: <b>'+money(sp)+'</b>, about $1 of every $'+Math.round(1/rate)+'</span></div>'+
+        '<div class="ng-cap">Each square is 1% of the tracked funds\' '+T(sa)+' in assets.</div></div>'+
+      '<div class="ng-arrow" aria-hidden="true">→</div>'+
+      '<div class="ng-card"><span class="ng-n">3</span><div class="ng-h">Apply the same '+P(rate,2)+' to all pension assets</div><div class="ng-big">≈ '+money(st.last.v)+'</div>'+
+        '<div class="ng-bar" role="img" aria-label="'+money(sp)+' reported and '+money(est)+' estimated"><span class="seg-nv" style="flex:'+sp+'" title="Reported by the tracked funds: '+money(sp)+'"></span><span class="seg-est" style="flex:'+est+'" title="Estimated for all other funds: '+money(est)+'"></span></div>'+
+        '<div class="ng-key"><span><i class="seg-nv"></i>Reported by the '+nInc+' tracked funds: <b>'+money(sp)+'</b></span><span><i class="seg-est"></i>Estimated for all other funds: <b>'+money(est)+'</b></span></div>'+
+        '<div class="ng-cap">'+P(rate,2)+' × '+T(NA)+'. This assumes other funds hold NVIDIA at the same rate as the tracked funds.</div></div>'+
+      '</div><p class="ng-foot">The four boxes above are scaled the same way: each equals the tracked funds\' figure × '+(K).toFixed(2)+' ('+T(NA)+' ÷ '+T(sa)+').</p>';
     nm.hidden=false;} else nm.hidden=true;
   $("#totalSub").textContent="Valued at each day's NVDA close using "+basisTxt+". Dashed line marks the period peak.";
   const vis=rangeFilter(full);
