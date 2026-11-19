@@ -22,6 +22,8 @@ section{margin-top:var(--space-12)}
 h1.eqb-h2{margin:var(--space-4) 0 var(--space-4);max-width:22ch}
 .lede{margin:0;max-width:60ch}
 .meta{margin-top:var(--space-4);font-weight:var(--weight-medium);font-size:var(--fs-badge-sm);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-muted)}
+.live{margin:var(--space-3) 0 0;max-width:80ch;font-size:var(--fs-paragraph-sm);line-height:var(--lh-body);color:var(--text-body);font-variant-numeric:tabular-nums}
+.live b{font-weight:var(--weight-medium);color:var(--text-strong)}
 
 /* Controls: notched-pill Tags */
 .controls{display:flex;flex-wrap:wrap;gap:var(--space-4) var(--space-8);align-items:center;margin-top:var(--space-10);padding-top:var(--space-6);border-top:1px solid var(--border-subtle)}
@@ -115,6 +117,7 @@ footer .eqb-caption{margin:0}
     <h1 class="eqb-h2">NVIDIA holdings of large state and local pension funds</h1>
     <p class="eqb-body-lg lede">Daily market value of the NVIDIA (NVDA) shares that 25 large U.S. public pension funds report holding, valued at each day's closing price.</p>
     <div class="meta" id="meta">Loading data</div>
+    <p class="live" id="live" hidden></p>
   </header>
 
   <div class="controls" role="group" aria-label="Display options">
@@ -348,6 +351,19 @@ function render(){
   });
   renderTable(st);
   renderFund();
+  renderLive(st);
+}
+
+function renderLive(st){
+  const el=$("#live"),L=D.raw.live;
+  const p=L?num(L.price):null;
+  if(p===null){el.hidden=true;return;}
+  let sh=0;for(const f of D.funds.filter(active)) sh+=fundShares(f,st.last.t);
+  const pc=num(L.prior_close),chg=pc?p/pc-1:null;
+  el.innerHTML='<b>Latest NVDA price: $'+p.toFixed(2)+'</b>'+(chg!==null?' ('+pct(chg,2)+' from the prior close of $'+pc.toFixed(2)+')':'')+
+    ' · Last trade '+esc(L.trade_time||'n/a')+' ET, from Google Finance; may be delayed up to 20 minutes.'+
+    ' Combined value at this price: <b>'+money(sh*p)+'</b> ('+(state.basis==="latest"?'price effect only':'shares as disclosed')+'). Charts, cards and table use daily closing prices.';
+  el.hidden=false;
 }
 
 function fundRow(f){
