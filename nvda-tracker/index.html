@@ -25,6 +25,10 @@ section{margin-top:var(--space-12)}
 .eyebrow .bar{width:28px;height:3px;background:var(--yellow-500);flex:none}
 h1.eqb-h2{margin:var(--space-4) 0 var(--space-4);max-width:none}
 .lede{margin:0;max-width:none}
+.intro{margin-top:var(--space-6)}
+.intro p{margin:0 0 var(--space-4);font-family:var(--font-sans);font-size:var(--fs-paragraph);line-height:var(--lh-paragraph);color:var(--text-body)}
+.intro p:last-child{margin-bottom:0}
+.intro b{font-weight:var(--weight-medium);color:var(--text-strong)}
 .meta{margin-top:var(--space-4);font-weight:var(--weight-medium);font-size:var(--fs-badge-sm);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-muted)}
 .live{margin:var(--space-3) 0 0;max-width:80ch;font-size:var(--fs-paragraph-sm);line-height:var(--lh-body);color:var(--text-body);font-variant-numeric:tabular-nums}
 .live b{font-weight:var(--weight-medium);color:var(--text-strong)}
@@ -150,6 +154,7 @@ footer .eqb-caption{margin:0}
     <div class="eyebrow"><span class="bar" aria-hidden="true"></span>Public pension investments</div>
     <h1 class="eqb-h2">NVIDIA holdings of large state and local pension funds</h1>
     <p class="eqb-body-lg lede">Daily market value of NVIDIA (NVDA) shares that 25 large U.S. public pension funds report holding, valued at each day's closing price.</p>
+    <div class="intro" id="intro"></div>
     <div class="meta" id="meta">Loading data</div>
     <p class="live" id="live" hidden></p>
   </header>
@@ -260,6 +265,15 @@ function dt(v){
 // Display rules: WSIB's 13F (no NVDA position) is not shown because WSIB is covered by its holdings report;
 // UC Regents and North Carolina are listed as undisclosed and left out of totals.
 const EXCLUDE=["WSIB (13F)"],UNDISCLOSED=["UC Regents"];
+// Display names for the table (sheet short names stay as the data keys).
+const DISPLAY={"WSIB (Holdings Rpt)*":"Washington SIB*"};
+const disp=f=>DISPLAY[f.id]||f.short;
+// Fund IDs: every name a fund may appear under in the sheet (short name, full name, display name), so the
+// lookups above and FUND_ASSETS below keep working if a name is changed in the Holdings tab.
+const FUND_ALIASES={"CalPERS": ["CalPERS", "California Public Employees' Retirement System"], "CalSTRS": ["CalSTRS", "California State Teachers' Retirement System"], "NY State Common": ["NY State Common", "New York State Common Retirement Fund"], "Texas TRS": ["Texas TRS", "Teacher Retirement System of Texas"], "Florida SBA": ["Florida SBA", "Florida State Board of Administration"], "NYSTRS": ["NYSTRS", "New York State Teachers' Retirement System"], "Wisconsin SWIB": ["Wisconsin SWIB", "State of Wisconsin Investment Board"], "NJ Common Fund D": ["NJ Common Fund D", "New Jersey Division of Investment - Common Pension Fund D"], "Virginia RS": ["Virginia RS", "Virginia Retirement System"], "UC Regents": ["UC Regents", "Regents of the University of California - Retirement", "University of California", "UC Retirement", "UCRP"], "Ohio PERS": ["Ohio PERS", "Ohio Public Employees Retirement System (OPERS)"], "Minnesota SBI": ["Minnesota SBI", "Minnesota State Board of Investment"], "Ohio STRS": ["Ohio STRS", "State Teachers Retirement System of Ohio"], "Michigan SRS": ["Michigan SRS", "State of Michigan Retirement Systems"], "Oregon PERF": ["Oregon PERF", "Oregon Public Employees Retirement Fund"], "LACERA": ["LACERA", "Los Angeles County Employees Retirement Association"], "Pennsylvania PSERS": ["Pennsylvania PSERS", "Pennsylvania Public School Employees' Retirement System"], "Maryland SRPS": ["Maryland SRPS", "Maryland State Retirement and Pension System"], "Colorado PERA": ["Colorado PERA", "Colorado Public Employees' Retirement Association"], "WSIB (13F)": ["WSIB (13F)", "Washington State Investment Board (13F)", "Washington SIB (13F)", "WSIB 13F"], "NYC Combined*": ["NYC Combined*", "New York City Public Pension Funds (5 funds combined) *"], "Georgia TRS*": ["Georgia TRS*", "Teachers Retirement System of Georgia *"], "MA PRIM*": ["MA PRIM*", "Massachusetts PRIM Board *"], "Illinois TRS*": ["Illinois TRS*", "Teachers' Retirement System of the State of Illinois *"], "WSIB (Holdings Rpt)*": ["WSIB (Holdings Rpt)*", "Washington State Investment Board (Holdings Report) *", "Washington SIB*", "Washington SIB", "Washington State Investment Board", "WSIB", "WSIB (Holdings Report)"]};
+const normName=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+const ALIAS_IDX={};for(const id in FUND_ALIASES) for(const n of FUND_ALIASES[id]) ALIAS_IDX[normName(n)]=id;
+function fundId(short,name){return ALIAS_IDX[normName(short)]||ALIAS_IDX[normName(name)]||ALIAS_IDX[normName(String(short).replace(/\*/g,""))]||ALIAS_IDX[normName(String(name).replace(/\*/g,""))]||short;}
 const EXTRA_UNDISCLOSED=[{name:"North Carolina Retirement Systems",short:"North Carolina"}];
 const CUTOFF_T=Date.UTC(2026,10,6); // 11/6/2026 close, last close before the 11/8/2026 board announcement
 // National estimate inputs. Fill in total assets (USD) for each sample fund, keyed by short name; the toggle stays hidden until every included fund has a value.
@@ -279,11 +293,13 @@ function parse(raw){
     if(!slots.length) continue;
     slots.sort((a,b)=>a.t-b.t);
     const name=String(r[0]||"").trim(), short=String(r[1]||name).trim();
-    if(EXCLUDE.includes(short)) continue;
-    const undis=UNDISCLOSED.includes(short);
-    funds.push({name,short,source:undis?"Not disclosed":String(r[2]||""),include:!undis&&num(r[3])!==0,undisclosed:undis,dated:/\*/.test(short)||/\*/.test(name),slots,latest:slots[slots.length-1]});
+    const id=fundId(short,name);
+    if(EXCLUDE.includes(id)) continue;
+    const undis=UNDISCLOSED.includes(id);
+    if(!FUND_ALIASES[id]) console.warn("Unrecognized fund name in sheet:",short,name);
+    funds.push({id,name,short,source:undis?"Not disclosed":String(r[2]||""),include:!undis&&num(r[3])!==0,undisclosed:undis,dated:/\*/.test(short)||/\*/.test(name)||/\*/.test(id),slots,latest:slots[slots.length-1]});
   }
-  for(const x of EXTRA_UNDISCLOSED) funds.push(Object.assign({source:"Not disclosed",include:false,undisclosed:true,dated:false,slots:[{t:0,shares:0}],latest:{t:0,shares:0}},x));
+  for(const x of EXTRA_UNDISCLOSED) funds.push(Object.assign({id:x.short,source:"Not disclosed",include:false,undisclosed:true,dated:false,slots:[{t:0,shares:0}],latest:{t:0,shares:0}},x));
   return {days,funds,raw};
 }
 
@@ -291,7 +307,7 @@ function parse(raw){
 function sharesAt(f,t){let s=0;for(const sl of f.slots){if(sl.t<=t) s=sl.shares;}return s;}
 function fundShares(f,t){return sharesAt(f,t);}
 // National estimate: k = national public pension assets / total assets of the included sample funds.
-function natK(){const fs=D.funds.filter(active);let a=0;for(const f of fs){const x=FUND_ASSETS[f.short];if(!(x>0)) return null;a+=x;}return a>0&&NATIONAL_ASSETS>0?NATIONAL_ASSETS/a:null;}
+function natK(){const fs=D.funds.filter(active);let a=0;for(const f of fs){const x=FUND_ASSETS[f.id];if(!(x>0)) return null;a+=x;}return a>0&&NATIONAL_ASSETS>0?NATIONAL_ASSETS/a:null;}
 function natReady(){return natK()!==null;}
 function active(f){return !f.undisclosed&&state.include[f.short]&&(state.dated||!f.dated);}
 function fundSeries(f){return D.days.map(d=>({t:d.t,close:d.close,v:d.close*fundShares(f,d.t)}));}
@@ -402,7 +418,7 @@ function render(){
     cut?['Change since '+fmtDate(cut.t),signedMoney(st.last.v-cut.v),shr(st.last.v-cut.v)+' · since the '+fmtDate(cut.t)+' close, the last close before NVIDIA\'s board announced an investigation involving CEO Jensen Huang (11/8/2026)']:['Change since '+fmtDate(st.first.t),signedMoney(ytd),shr(ytd)],
     ['Change from peak',signedMoney(vsPk),shr(vsPk)+' · from the '+money(st.pk.v)+' peak on '+fmtDate(st.pk.t)]
   ]:[
-    [nat?'National estimate':'Combined value',money(st.last.v),'As of the '+fmtDate(st.last.t)+(intra?' intraday price (not yet the close)':' close')+' · '+(nat?'all U.S. state and local pension funds ('+'$'+(NATIONAL_ASSETS/1e12).toFixed(2)+' trillion'+' in assets), scaled from '+nInc+' funds*':nInc+' funds* · shares as disclosed')],
+    [nat?'National estimate':'Combined value',money(st.last.v),'As of the '+fmtDate(st.last.t)+(intra?' intraday price (not yet the close)':' close')+' · '+(nat?'all U.S. state and local pension funds ('+'$'+(NATIONAL_ASSETS/1e12).toFixed(2)+' trillion'+' in assets), scaled from '+nInc+' funds*':nInc+' funds* · holdings as of '+fmtDate(Math.max(...D.funds.filter(active).map(f=>(f.slots.filter(x=>x.t<=st.last.t).pop()||f.slots[0]).t)))+' or earlier')],
     ['Change from prior close',dchg===null?'n/a':signedMoney(dchg),dchgP===null?'':pct(dchgP,2)+' · NVDA '+(intra?'intraday price $':'closed at $')+st.last.close.toFixed(2)+' ('+pct(cchg,2)+')'],
     cut?['Change since '+fmtDate(cut.t),signedMoney(st.last.v-cut.v),pct(cut.v?st.last.v/cut.v-1:null)+' from '+money(cut.v)+' at the '+fmtDate(cut.t)+' close, the last close before NVIDIA\'s board announced an investigation involving CEO Jensen Huang (11/8/2026)']:['Change since '+fmtDate(st.first.t),signedMoney(ytd),pct(ytdP)+' from '+money(st.first.v)],
     ['Change from peak',signedMoney(vsPk),pct(vsPkP)+' from the '+money(st.pk.v)+' peak on '+fmtDate(st.pk.t)]
@@ -442,10 +458,24 @@ function render(){
     tip:p=>'<div class="d">'+fmtLong(p.t)+'</div>'+tipRow("Below prior peak",pct(p.dd))+tipRow("Prior peak",money(p.peak)+" ("+fmtDate(p.peakT)+")")
   });
   renderTable(sample);
+  renderIntro(sample,nInc);
   renderFund();
   $("#live").hidden=true;
 }
 
+function renderIntro(sm,nInc){
+  const days=D.days;if(!days.length) return;
+  let rec=days[0];for(const d of days) if(d.close>rec.close) rec=d;
+  const last=days[days.length-1],off=last.close/rec.close-1;
+  let sh=0;const by={};for(const f of D.funds.filter(active)){sh+=fundShares(f,last.t);const a=(f.slots.filter(x=>x.t<=last.t).pop()||f.slots[0]).t;by[a]=(by[a]||0)+1;}
+  const long=t=>{const d=new Date(t);return ["January","February","March","April","May","June","July","August","September","October","November","December"][d.getUTCMonth()]+" "+d.getUTCDate()+", "+d.getUTCFullYear();};
+  const ks=Object.keys(by).map(Number).sort((x,y)=>y-x);
+  const asofTxt=ks.map((t,i)=>(i===0?'':(i===ks.length-1?(ks.length>2?', and ':' and '):', '))+by[t]+(i===0?(by[t]===1?' fund':' funds'):'')+' as of '+long(t)).join('');
+  $("#intro").innerHTML=
+    '<p>In early October 2026, NVIDIA was the world\'s most valuable company, worth about $5.8 trillion. Because stock indexes weight companies by size, it became one of the largest single holdings for many state and local pension funds. The '+nInc+' funds in this tracker report holding a combined '+(sh/1e6).toFixed(1)+' million NVIDIA shares, per their latest disclosures: '+asofTxt+'.</p>'+
+    '<p>The stock began falling after a record close of $'+rec.close.toFixed(2)+' on '+long(rec.t)+'. The decline accelerated after November 8, when NVIDIA\'s board announced an investigation involving CEO Jensen Huang, who resigned as CEO days later. NVDA is now <b>'+Math.abs(off*100).toFixed(1)+'% below</b> its record close. The combined value of the tracked funds\' NVIDIA holdings is <b>'+money(sm.pk.v-sm.last.v)+' below</b> its peak.</p>'+
+    '<p>This tracker shows the daily value of those holdings and an estimate for all U.S. state and local pension funds.</p>';
+}
 function priceAsOf(){
   const last=D.days[D.days.length-1];if(!last) return "n/a";
   const day=fmtLong(last.t),L=D.raw.live;
@@ -488,7 +518,7 @@ const COLS=[
 ];
 function renderTable(tot){
   const rows=D.funds.map(f=>f.undisclosed?{f,first:null,peak:null,latest:null,d1:null,vsPk:null,shares:null,asof:null}:fundRow(f)),key=state.sortKey,dir=state.sortDir;
-  const val=(r,k)=>k==="name"?r.f.short.toLowerCase():k==="src"?r.f.source:r[k];
+  const val=(r,k)=>k==="name"?disp(r.f).toLowerCase():k==="src"?r.f.source:r[k];
   rows.sort((a,b)=>{if(a.f.undisclosed!==b.f.undisclosed) return a.f.undisclosed?1:-1;const va=val(a,key),vb=val(b,key);if(va===vb) return 0;if(va==null) return 1;if(vb==null) return -1;return (va>vb?1:-1)*dir;});
   $("#fundTable thead").innerHTML="<tr>"+COLS.map(c=>{
     const cls=[c.num?"is-num":"",c.cls||""].join(" ").trim();
@@ -503,8 +533,8 @@ function renderTable(tot){
     const on=active(r.f),tr=document.createElement("tr");tr.tabIndex=0;
     if(!on) tr.classList.add("off"); if(state.sel===r.f.short) tr.classList.add("sel");
     const disabled=r.f.dated&&!state.dated;
-    tr.innerHTML='<td class="cb"><input type="checkbox" aria-label="Include '+esc(r.f.short)+'"'+(state.include[r.f.short]?' checked':'')+(disabled?' disabled':'')+'></td>'+
-      '<td class="fund" title="'+esc(r.f.name)+'">'+esc(r.f.short)+'<span class="src">'+esc(r.f.source)+'</span></td>'+
+    tr.innerHTML='<td class="cb"><input type="checkbox" aria-label="Include '+esc(disp(r.f))+'"'+(state.include[r.f.short]?' checked':'')+(disabled?' disabled':'')+'></td>'+
+      '<td class="fund" title="'+esc(r.f.name)+'">'+esc(disp(r.f))+'<span class="src">'+esc(r.f.source)+'</span></td>'+
       '<td class="is-num">'+intf(r.shares)+'</td><td class="is-num">'+fmtDate(r.asof)+'</td><td class="is-num">'+money(r.first)+'</td><td class="is-num">'+money(r.peak)+'</td><td class="is-num">'+money(r.latest)+'</td>'+
       '<td class="is-num">'+(r.d1===null?'n/a':signedMoney(r.d1))+'</td><td class="is-num">'+(r.vsPk===null?'n/a':pct(r.vsPk))+'</td>';
     tr.querySelector("input").addEventListener("click",e=>{e.stopPropagation();state.include[r.f.short]=e.target.checked;render();});
@@ -526,7 +556,7 @@ function renderFund(){
   $("#fundTitle").textContent=f.name;
   $("#fundSub").textContent=f.source+" · Disclosures used: "+f.slots.map(x=>fmtDate(x.t)+": "+intf(x.shares)+" shares").join(" · ")+(f.latest.shares===0?" · No NVDA position reported":"");
   lineChart($("#fundChart"),rangeFilter(s).map(p=>Object.assign({y:p.v},p)),{
-    label:"Value of "+f.short+" NVDA holdings over time",yfmt:v=>money(v,v>=1e9?1:0),yw:56,floorZero:true,
+    label:"Value of "+disp(f)+" NVDA holdings over time",yfmt:v=>money(v,v>=1e9?1:0),yw:56,floorZero:true,
     tip:p=>'<div class="d">'+fmtLong(p.t)+'</div>'+tipRow("Value",money(p.v))+tipRow("Shares",intf(fundShares(f,p.t)))+tipRow("NVDA close","$"+p.close.toFixed(2))+tipRow("Below prior peak",pct(p.dd))
   });
 }
@@ -574,7 +604,7 @@ async function init(){
   for(const f of D.funds) state.include[f.short]=f.include;
   const top=D.funds.slice().sort((a,b)=>b.latest.shares-a.latest.shares)[0];state.sel=top?top.short:null;
   const last=D.days[D.days.length-1];
-  $("#meta").textContent="Prices through "+priceAsOf();
+  $("#meta").textContent="Prices through "+priceAsOf()+(last?" · NVDA $"+last.close.toFixed(2)+" per share":"");
   const nb=document.querySelector('[data-basis="national"]');if(nb) nb.hidden=!natReady();document.getElementById("basisSeg").hidden=!natReady();
   bindSeg("#basisSeg","basis");bindSeg(".rangeSeg","range");
   $("#datedChk").addEventListener("change",e=>{state.dated=e.target.checked;render();});
