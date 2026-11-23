@@ -164,7 +164,7 @@ footer .eqb-caption{margin:0}
 <body>
 <main class="container">
   <header>
-    <a class="brand" href="https://equable.org" aria-label="Equable Institute home"><img src="equable-logo-lightbg.svg" alt="Equable Institute" width="170" height="32"></a>
+    <a class="brand" target="_blank" rel="noopener" href="https://equable.org" aria-label="Equable Institute home"><img src="equable-logo-lightbg.svg" alt="Equable Institute" width="170" height="32"></a>
     <div class="eyebrow"><span class="bar" aria-hidden="true"></span>Public pension investments</div>
     <h1 class="eqb-h2">NVIDIA holdings of large state and local pension funds</h1>
     <p class="eqb-body-lg lede">Daily market value of NVIDIA (NVDA) shares that the largest U.S. public pension funds report holding, valued at each day's closing price.</p>
@@ -179,7 +179,7 @@ footer .eqb-caption{margin:0}
       <button type="button" class="tag eqb-tag--interactive" data-basis="disclosed" aria-pressed="true" title="Each day uses the shares from the most recent disclosure on or before that day">Shares as disclosed</button>
       <button type="button" class="tag eqb-tag--interactive" data-basis="national" aria-pressed="false" hidden title="Scales the sample's NVDA holdings, as a share of the sample funds' total assets, to all U.S. state and local pension assets">National estimate</button>
     </div>
-    <label class="chk"><input type="checkbox" id="datedChk" checked> Include funds with 6/30/2025 holdings (*)</label>
+    <label class="chk"><input type="checkbox" id="datedChk" checked> Include funds with June 30, 2025 holdings (*)</label>
   </div>
 
   <div class="stats" id="kpis" aria-live="polite"></div>
@@ -235,21 +235,20 @@ footer .eqb-caption{margin:0}
   <section class="notes" id="notesCard">
     <div class="eyebrow">About these figures</div>
     <ul>
-      <li><b>Prices.</b> NVDA closing prices, not adjusted for dividends, starting 1/2/2026. Closes come from Google Finance and StockAnalysis.com, cross-checked against a second source. On trading days, the current day's row holds the Google Finance price recorded at about 10 am and 1 pm ET (which may be delayed up to 20 minutes) and is replaced by the closing price after 4 pm.</li>
+      <li><b>Prices.</b> NVDA closing prices, not adjusted for dividends, starting January 2, 2026. Closes come from Google Finance and StockAnalysis.com, cross-checked against a second source. On trading days, the current day's row holds the Google Finance price recorded at about 10 a.m. and 1 p.m. ET (which may be delayed up to 20 minutes) and is replaced by the closing price after 4 p.m.</li>
       <li><b>Holdings.</b> Shares come from each fund's own disclosures: SEC Form 13F filings for most funds, and published holdings listings, holdings reports, or annual comprehensive financial reports (ACFRs) for the rest. Each disclosure's share count applies from its as-of date until the next disclosure.</li>
-      <li><b>National estimate.</b> Takes the sample funds' combined NVDA value as a share of their combined total assets and applies that share to the $6.48 trillion held by all U.S. state and local pension funds (Equable State of Pensions, October 2026, 2026 estimate). Fund assets are Equable's estimated assets as of 6/30/2026 from the Pension AI Exposure workbook (10/23/2026); the 23 funds in the totals hold $4.09 trillion, or 63% of the national total. All four figures are scaled by the same factor. This assumes funds outside the sample hold NVDA in the same proportion to their assets as the sample funds.</li>
-      <li><b>Change since 11/6/2026.</b> 11/6/2026 is the last close before NVIDIA's board of directors announced, on 11/8/2026, an investigation involving CEO Jensen Huang.</li>
-      <li id="note-market"><b><sup>1</sup> Market context.</b> Reporting on the October and early November decline tied it to a sector-wide selloff in technology and semiconductor stocks, including higher Treasury yields after U.S. inflation data (<a href="https://invezz.com/news/2026/10/14/why-nvidia-shares-have-fallen-over-2-on-wednesday/">Invezz, 10/14/2026</a>), investor concern about AI spending (<a href="https://aljazeera.com/economy/2026/10/23/us-tech-stocks-tumble-as-investors-fret-over-ai-spending">Al Jazeera, 10/23/2026</a>), and questions about whether AI infrastructure investment will generate sufficient returns (<a href="https://www.ibtimes.co.uk/nvidia-loses-market-value-ai-stock-selloff-1830575">IBTimes UK, 11/5/2026</a>). NVIDIA's market value at the 11/6/2026 close is estimated by scaling its reported $5.78 trillion record valuation on 10/6/2026 (IBTimes UK) by the change in closing price, which assumes a constant share count.</li>
-      <li id="note-huang"><b><sup>2</sup> CEO investigation.</b> Board announcement: <a href="https://investor.nvidia.com/news/press-release-details/2026/Statement-from-NVIDIA-Board-of-Directors/default.aspx">Statement from NVIDIA Board of Directors, 11/8/2026</a>. Reporting on Huang's disclosure and the intelligence allegations: <a href="https://www.washingtonpost.com/business/2026/11/08/nvidia-jensen-huang-investigation-chinese-spy/7965324e-dbbd-11f1-912c-4fbb80d73f7f_story.html">The Washington Post, 11/8/2026</a>; <a href="https://www.nbcnews.com/tech/tech-news/nvidia-ceo-jensen-huang-investigation-rcna608148">NBC News, 11/8/2026</a>. Resignation: <a href="https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000082/nvda-20261111.htm">NVIDIA Form 8-K, 11/11/2026</a>.</li>
-      <li id="note-asof"><b><sup>3</sup> Disclosure dates.</b> Latest disclosures used for the funds currently included: <span id="asofTxt"></span></li>
+      <li><b>National estimate.</b> Takes the sample funds' combined NVDA value as a share of their combined total assets and applies that share to the $6.48 trillion held by all U.S. state and local pension funds (Equable State of Pensions, October 2026, 2026 estimate). Fund assets are Equable's estimated assets as of June 30, 2026 from the Pension AI Exposure workbook (October 23, 2026); the 23 funds in the totals hold $4.09 trillion, or 63% of the national total. All four figures are scaled by the same factor. This assumes funds outside the sample hold NVDA in the same proportion to their assets as the sample funds.</li>
+      <li><b>Change since November 6, 2026.</b> November 6, 2026 is the last close before NVIDIA's board of directors announced, on November 8, 2026, an investigation involving CEO Jensen Huang.</li>
+      <li id="note-huang"><b><sup>1</sup> CEO investigation and reinstatement.</b> Board announcement: <a target="_blank" rel="noopener" href="https://investor.nvidia.com/news/press-release-details/2026/Statement-from-NVIDIA-Board-of-Directors/default.aspx">Statement from NVIDIA Board of Directors, November 8, 2026</a>. Reporting on Huang's disclosure and the intelligence allegations: <a target="_blank" rel="noopener" href="https://www.washingtonpost.com/business/2026/11/08/nvidia-jensen-huang-investigation-chinese-spy/7965324e-dbbd-11f1-912c-4fbb80d73f7f_story.html">The Washington Post, November 8, 2026</a>; <a target="_blank" rel="noopener" href="https://www.nbcnews.com/tech/tech-news/nvidia-ceo-jensen-huang-investigation-rcna608148">NBC News, November 8, 2026</a>. Resignation: <a target="_blank" rel="noopener" href="https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000082/nvda-20261111.htm">NVIDIA Form 8-K, November 11, 2026</a>. Reinstatement: <a target="_blank" rel="noopener" href="https://nvidianews.nvidia.com/news/nvidia-board-reinstates-jensen-huang-as-president-ceo-and-board-director">NVIDIA Board Reinstates Jensen Huang as President, CEO and Board Director, November 23, 2026</a>; <a target="_blank" rel="noopener" href="https://www.cbsnews.com/news/nvidia-reinstates-jensen-huang-ceo/">CBS News, November 23, 2026</a>.</li>
+      <li id="note-asof"><b><sup>2</sup> Disclosure dates.</b> Latest disclosures used for the funds currently included: <span id="asofTxt"></span></li>
       <li><b>Holdings are a floor.</b> 13F filings cover directly held and internally managed positions. Shares held through commingled funds or some external managers may not appear. Trades inside a quarter are not visible.</li>
-      <li><b>* Dated holdings.</b> New York City (five funds combined), Georgia TRS, Massachusetts PRIM, Illinois TRS, and the WSIB Holdings Report last reported holdings as of 6/30/2025. Their share counts are held constant through the whole period. For MA PRIM, Illinois TRS and the WSIB Holdings Report, shares are derived from reported dollar values divided by the 6/30/2025 NVDA close ($157.99).</li>
+      <li><b>* Dated holdings.</b> New York City (five funds combined), Georgia TRS, Massachusetts PRIM, Illinois TRS, and the WSIB Holdings Report last reported holdings as of June 30, 2025. Their share counts are held constant through the whole period. For MA PRIM, Illinois TRS and the WSIB Holdings Report, shares are derived from reported dollar values divided by the June 30, 2025 NVDA close ($157.99).</li>
       <li><b>Coverage.</b> The list covers the 25 largest U.S. public pension funds. North Carolina and UC Regents are shown as undisclosed and are not included in the totals. WSIB is represented by its holdings report; its 13F, which lists no NVDA position, is not shown.</li>
     </ul>
   </section>
 
   <footer>
-    <p class="eqb-caption" id="srcLine">Source: Equable Institute analysis of fund disclosures (from the 10/23/2026 AI Exposure workbook) and NVDA closing prices from StockAnalysis.com.</p>
+    <p class="eqb-caption" id="srcLine">Source: Equable Institute analysis of fund disclosures (from the October 23, 2026 AI Exposure workbook) and NVDA closing prices from StockAnalysis.com.</p>
     <img src="equable-logo-lightbg.svg" alt="Equable Institute">
   </footer>
 </main>
@@ -339,8 +338,9 @@ function stats(s){if(!s.length) return null;const last=s[s.length-1],prev=s.leng
 
 // ---------- format ----------
 const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const fmtDate=t=>{const d=new Date(t);return (d.getUTCMonth()+1)+"/"+d.getUTCDate()+"/"+d.getUTCFullYear();};
-const fmtLong=t=>{const d=new Date(t);return MON[d.getUTCMonth()]+" "+d.getUTCDate()+", "+d.getUTCFullYear();};
+const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const fmtDate=t=>{const d=new Date(t);return MONTHS[d.getUTCMonth()]+" "+d.getUTCDate()+", "+d.getUTCFullYear();};
+const fmtLong=fmtDate;
 const fmtAxisDate=t=>{const d=new Date(t);return MON[d.getUTCMonth()]+" "+d.getUTCDate();};
 function money(v,dp){
   if(v===null||!isFinite(v)) return "n/a";
@@ -450,12 +450,12 @@ function render(){
   const boxes=nat?[
     ['Estimate: all U.S. state and local pensions',money(st.last.v),pct(st.last.v/NA,2).replace('+','')+' of the '+natT+' in U.S. state and local pension assets · as of the '+fmtDate(st.last.t)+(intra?' intraday price':' close')],
     ['One-day change',dchg===null?'n/a':signedMoney(dchg),dchg===null?'':shr(dchg)+' · NVDA '+(intra?'intraday price $':'closed at $')+st.last.close.toFixed(2)+' ('+pct(cchg,2)+')'],
-    cut?['Change since '+fmtDate(cut.t),signedMoney(st.last.v-cut.v),shr(st.last.v-cut.v)+' · since the '+fmtDate(cut.t)+' close, the last close before NVIDIA\'s board announced an investigation involving CEO Jensen Huang (11/8/2026)']:['Change since '+fmtDate(st.first.t),signedMoney(ytd),shr(ytd)],
+    cut?['Change since '+fmtDate(cut.t),signedMoney(st.last.v-cut.v),shr(st.last.v-cut.v)+' · since the '+fmtDate(cut.t)+' close, the last close before NVIDIA\'s board announced an investigation involving CEO Jensen Huang (November 8, 2026)']:['Change since '+fmtDate(st.first.t),signedMoney(ytd),shr(ytd)],
     ['Change from '+fmtDate(st.pk.t)+' holdings peak',signedMoney(vsPk),shr(vsPk)+' · from the '+money(st.pk.v)+' peak on '+fmtDate(st.pk.t)+pkNote]
   ]:[
     [nat?'National estimate':'Combined value',money(st.last.v),'As of the '+fmtDate(st.last.t)+(intra?' intraday price (not yet the close)':' close')+' · '+(nat?'all U.S. state and local pension funds ('+'$'+(NATIONAL_ASSETS/1e12).toFixed(2)+' trillion'+' in assets), scaled from '+nInc+' funds*':nInc+' funds* · holdings as of '+fmtDate(Math.max(...D.funds.filter(active).map(f=>(f.slots.filter(x=>x.t<=st.last.t).pop()||f.slots[0]).t)))+' or earlier')],
     ['One-day change',dchg===null?'n/a':signedMoney(dchg),dchgP===null?'':pct(dchgP,2)+' · NVDA '+(intra?'intraday price $':'closed at $')+st.last.close.toFixed(2)+' ('+pct(cchg,2)+')'],
-    cut?['Change since '+fmtDate(cut.t),signedMoney(st.last.v-cut.v),pct(cut.v?st.last.v/cut.v-1:null)+' from '+money(cut.v)+' at the '+fmtDate(cut.t)+' close, the last close before NVIDIA\'s board announced an investigation involving CEO Jensen Huang (11/8/2026)']:['Change since '+fmtDate(st.first.t),signedMoney(ytd),pct(ytdP)+' from '+money(st.first.v)],
+    cut?['Change since '+fmtDate(cut.t),signedMoney(st.last.v-cut.v),pct(cut.v?st.last.v/cut.v-1:null)+' from '+money(cut.v)+' at the '+fmtDate(cut.t)+' close, the last close before NVIDIA\'s board announced an investigation involving CEO Jensen Huang (November 8, 2026)']:['Change since '+fmtDate(st.first.t),signedMoney(ytd),pct(ytdP)+' from '+money(st.first.v)],
     ['Change from '+fmtDate(st.pk.t)+' holdings peak',signedMoney(vsPk),pct(vsPkP)+' from the '+money(st.pk.v)+' peak on '+fmtDate(st.pk.t)+pkNote]
   ];
   $("#kpis").innerHTML=boxes.map(k=>'<div class="stat"><div class="k">'+k[0]+'</div><div class="v">'+k[1]+'</div><div class="q">'+k[2]+'</div></div>').join("");
@@ -521,31 +521,33 @@ function renderIntro(sm,nInc){
   let sh=0;const by={};for(const f of D.funds.filter(active)){sh+=fundShares(f,last.t);const a=(f.slots.filter(x=>x.t<=last.t).pop()||f.slots[0]).t;by[a]=(by[a]||0)+1;}
   const long=t=>{const d=new Date(t);return ["January","February","March","April","May","June","July","August","September","October","November","December"][d.getUTCMonth()]+" "+d.getUTCDate()+", "+d.getUTCFullYear();};
   const ks=Object.keys(by).map(Number).sort((x,y)=>y-x);
+  const wd=n=>n>=0&&n<10?["zero","one","two","three","four","five","six","seven","eight","nine"][n]:n;
   const nUn=D.funds.filter(f=>f.undisclosed).length,nTr=D.funds.length-nUn;
   // Close and estimated market value at the 11/6/2026 close (last close before the 11/8 announcement).
-  // Market value scales the reported $5.78 trillion record valuation (10/6/2026, IBTimes UK) by the change in closing price; assumes a constant share count.
-  const cutD=days.find(d=>d.t===CUTOFF_T),mcap=cutD?5.78e12*cutD.close/rec.close:null;
+  // Market value scales the reported record valuation of about $5.8 trillion (10/6/2026, Yahoo Finance) by the change in closing price; assumes a constant share count.
+  const cutD=days.find(d=>d.t===CUTOFF_T),mcap=cutD?5.8e12*cutD.close/rec.close:null;
   const cutTxt=cutD?' By November 6, only one month after the record close, NVDA stock closed at $'+cutD.close.toFixed(2)+', down '+Math.abs((cutD.close/rec.close-1)*100).toFixed(1)+'% from the record and lowering NVIDIA\'s market value to $'+(mcap/1e12).toFixed(1)+' trillion.':'';
-  const asofTxt=ks.map((t,i)=>(i===0?'':(i===ks.length-1?(ks.length>2?', and ':' and '):', '))+by[t]+(i===0?(by[t]===1?' fund':' funds'):'')+' as of '+long(t)).join('');
+  const asofTxt=ks.map((t,i)=>(i===0?'':(i===ks.length-1?(ks.length>2?', and ':' and '):', '))+wd(by[t])+(i===0?(by[t]===1?' fund':' funds'):'')+' as of '+long(t)).join('');
   $("#intro").innerHTML=
     '<p>In early October 2026, NVIDIA was the world\'s most valuable company, worth about $5.8 trillion. Many state and local pension funds held substantial positions in NVIDIA, and at that valuation it was one of the largest single holdings in their portfolios.</p>'+
-    '<p>After reaching a record close of $'+rec.close.toFixed(2)+' per share on '+long(rec.t)+', the stock began to fall amid a broader selloff in technology stocks, which was tied to investor concerns about AI spending.<sup><a href="#note-market" aria-label="Note 1: Market context">1</a></sup>'+cutTxt+'</p>'+
-    '<p>But the prior month\'s losses were only the start. On November 8, NVIDIA\'s board announced an independent investigation following reports that CEO Jensen Huang had been the target of a foreign intelligence effort. The same day, Huang disclosed to employees that he had had an affair with a businesswoman who, according to news reports, U.S. officials believed had been recruited by Chinese intelligence. The board said it had no reason to believe national security or company secrets had been compromised.<sup><a href="#note-huang" aria-label="Note 2: CEO investigation">2</a></sup> The stock fell sharply in the days that followed, and Huang resigned as CEO on November 11. As of '+long(last.t)+', NVDA '+(isIntraday()?'is trading at $':'closed at $')+last.close.toFixed(2)+', <b>'+Math.abs(off*100).toFixed(1)+'% below</b> its record close in October.</p>'+
+    '<p>After reaching a record close of $'+rec.close.toFixed(2)+' per share on '+long(rec.t)+', the stock began to fall amid a broader selloff in technology stocks, which was tied to investor concerns about AI spending.'+cutTxt+'</p>'+
+    '<p>But the prior month\'s losses were only the start. On November 8, NVIDIA\'s board announced an independent investigation following reports that CEO Jensen Huang had been the target of a foreign intelligence effort. The same day, Huang disclosed to employees that he had had an affair with a businesswoman who, according to news reports, U.S. officials believed had been recruited by Chinese intelligence. The board said it had no reason to believe national security or company secrets had been compromised.<sup><a href="#note-huang" aria-label="Note 1: CEO investigation">1</a></sup> The stock fell sharply in the days that followed, and Huang resigned as CEO on November 11.</p>'+
+    '<p>On November 23, NVIDIA\'s board voted unanimously to reinstate Huang as president, CEO and board director, effective immediately. The board said it had received input from senior levels of the U.S. government and was confident that the reinstatement poses no national security risk. It also said the independent committee\'s investigation will proceed to conclusion.<sup><a href="#note-huang" aria-label="Note 1: CEO investigation and reinstatement">1</a></sup> As of '+long(last.t)+', NVDA '+(isIntraday()?'is trading at $':'closed at $')+last.close.toFixed(2)+', <b>'+Math.abs(off*100).toFixed(1)+'% below</b> its record close in October.</p>'+
     '<p>The fall in NVDA\'s stock price is more than a story of business intrigue and international affairs. NVIDIA is one of the largest single holdings for many state and local pension funds, so the drop in the company\'s value reduces the value of their investment portfolios. Equable built this tracker to monitor the effect of NVIDIA\'s decline on these retirement systems.</p>'+
-    '<p>The tracker includes '+nTr+' of the 25 largest U.S. public pension funds ('+nUn+' do not disclose their NVIDIA holdings and are excluded) and values their NVDA holdings using each fund\'s latest disclosure.<sup><a href="#note-asof" aria-label="Note 3: Disclosure dates">3</a></sup> At the latest price, '+(nInc===nTr?'these funds':'the '+nInc+' funds currently included')+' hold a combined '+(sh/1e6).toFixed(1)+' million NVIDIA shares with a combined value of <b>'+money(sm.last.v)+'</b>, which is <b>'+money(sm.pk.v-sm.last.v)+' below</b> their peak value.</p>';
+    '<p>The tracker includes '+wd(nTr)+' of the 25 largest U.S. public pension funds ('+wd(nUn)+' do not disclose their NVIDIA holdings and are excluded) and values their NVDA holdings using each fund\'s latest disclosure.<sup><a href="#note-asof" aria-label="Note 2: Disclosure dates">2</a></sup> At the latest price, '+(nInc===nTr?'these funds':'the '+nInc+' funds currently included')+' hold a combined '+(sh/1e6).toFixed(1)+' million NVIDIA shares with a combined value of <b>'+money(sm.last.v)+'</b>, which is <b>'+money(sm.pk.v-sm.last.v)+' below</b> their peak value.</p>';
   const na=document.getElementById('asofTxt');if(na) na.textContent=asofTxt.charAt(0).toUpperCase()+asofTxt.slice(1)+'.';
 }
 function priceAsOf(){
   const last=D.days[D.days.length-1];if(!last) return "n/a";
   const day=fmtLong(last.t),L=D.raw.live;
   const m=L&&L.trade_time?String(L.trade_time).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2})/):null;
-  if(!m||Date.UTC(+m[3],+m[1]-1,+m[2])!==last.t) return day+", 4:00 PM ET (close)";
+  if(!m||Date.UTC(+m[3],+m[1]-1,+m[2])!==last.t) return day+", 4:00 p.m. ET (close)";
   const h=+m[4],mi=+m[5];
-  if(h*60+mi>=960) return day+", 4:00 PM ET (close)";
+  if(h*60+mi>=960) return day+", 4:00 p.m. ET (close)";
   const p=num(L.price);
-  if(p!==null&&Math.abs(p-last.close)<0.005) return day+", "+((h%12)||12)+":"+String(mi).padStart(2,"0")+" "+(h<12?"AM":"PM")+" ET";
+  if(p!==null&&Math.abs(p-last.close)<0.005) return day+", "+((h%12)||12)+":"+String(mi).padStart(2,"0")+" "+(h<12?"a.m.":"p.m.")+" ET";
   const nowH=+new Date().toLocaleString("en-US",{timeZone:"America/New_York",hour:"numeric",hour12:false});
-  return day+", about "+(nowH>=13?"1:00 PM":"10:00 AM")+" ET";
+  return day+", about "+(nowH>=13?"1:00 p.m.":"10:00 a.m.")+" ET";
 }
 function isIntraday(){
   const L=D.raw.live;if(!L||!L.trade_time||!D.days.length) return false;
@@ -560,7 +562,7 @@ function renderLive(st){
   const pc=num(L.prior_close),chg=pc?p/pc-1:null;
   el.innerHTML='<b>Latest NVDA price: $'+p.toFixed(2)+'</b>'+(chg!==null?' ('+pct(chg,2)+' from the prior close of $'+pc.toFixed(2)+')':'')+
     ' · Last trade '+esc(L.trade_time||'n/a')+' ET, from Google Finance; may be delayed up to 20 minutes.'+
-    ' Combined value at this price: <b>'+money(sh*p)+'</b> (shares as disclosed). During trading hours, today\'s row in the charts, cards and table uses the price recorded at the most recent scheduled update (about 10 am and 1 pm ET); it is replaced by the closing price after the close.';
+    ' Combined value at this price: <b>'+money(sh*p)+'</b> (shares as disclosed). During trading hours, today\'s row in the charts, cards and table uses the price recorded at the most recent scheduled update (about 10 a.m. and 1 p.m. ET); it is replaced by the closing price after the close.';
   el.hidden=false;
 }
 
